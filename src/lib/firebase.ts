@@ -4,7 +4,7 @@ import { getMessaging, getToken, onMessage, isSupported } from 'firebase/messagi
 // Import debug logger - use dynamic import to avoid circular dependency
 let addDebugLog: ((msg: string) => void) | null = null;
 if (typeof window !== 'undefined') {
-    import('./components/FCMDebugger').then(module => {
+    import('../components/FCMDebugger').then(module => {
         addDebugLog = module.addDebugLog;
     });
 }
