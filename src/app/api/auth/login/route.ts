@@ -3,6 +3,21 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 import { comparePassword } from '@/lib/auth';
 import { signToken } from '@/lib/jwt';
 
+export async function OPTIONS(request: Request) {
+    return new NextResponse(null, {
+        status: 204,
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        },
+    });
+}
+
+export async function GET(request: Request) {
+    return NextResponse.json({ error: 'Method not allowed. Please use POST.' }, { status: 405 });
+}
+
 export async function POST(request: Request) {
     try {
         const { name, password } = await request.json();
