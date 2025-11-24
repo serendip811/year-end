@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { MessageCircle, User, LogOut } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import NotificationButton from '@/components/NotificationButton';
 
 interface UserInfo {
   id: string;
@@ -59,9 +60,12 @@ export default function DashboardPage() {
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900">Dashboard ({data.user.name})</h1>
-          <button onClick={handleLogout} className="text-gray-500 hover:text-gray-700">
-            <LogOut size={24} />
-          </button>
+          <div className="flex items-center space-x-2">
+            <NotificationButton />
+            <button onClick={handleLogout} className="text-gray-500 hover:text-gray-700">
+              <LogOut size={24} />
+            </button>
+          </div>
         </div>
       </header>
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
