@@ -35,7 +35,7 @@ export default function ChangePasswordPage() {
             }
 
             toast.success('Password changed successfully!');
-            router.push('/dashboard');
+            router.push('/');
         } catch (error: any) {
             toast.error(error.message);
         } finally {

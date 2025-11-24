@@ -12,7 +12,7 @@ export default function BottomNav() {
     // Don't show bottom nav on login or chat room pages (optional, but usually chat room has its own input bar)
     // Actually, user asked for "Dashboard / Chat" tabs.
     // If we are in a specific chat room, we might want to hide it to give more space, or keep it.
-    // Let's hide it in specific chat rooms `/chat/[id]` but show it on `/dashboard` and `/chats`.
+    // Let's hide it in specific chat rooms `/chat/[id]` but show it on `/` and `/chats`.
     if (pathname.startsWith('/chat/') && pathname.split('/').length > 2) {
         return null;
     }
