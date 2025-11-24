@@ -179,20 +179,24 @@ export default function ChatRoomPage() {
     };
 
     return (
-        <div className="flex flex-col h-screen bg-gray-100">
-            {/* Header */}
-            <div className="bg-white shadow px-4 py-3 flex items-center z-10">
+        <div className="flex flex-col h-full w-full bg-gray-100 relative">
+            {/* Header - Fixed */}
+            <div className="sticky top-0 bg-white shadow px-4 py-3 flex items-center z-20 border-b border-gray-200">
                 <button onClick={() => router.back()} className="mr-4 text-gray-600">
                     <ArrowLeft />
                 </button>
                 <h1 className="text-lg font-bold text-gray-800">Chat Room</h1>
             </div>
 
-            {/* Messages */}
+            {/* Messages - Scrollable */}
             <div
                 ref={chatContainerRef}
                 onScroll={handleScroll}
                 className="flex-1 overflow-y-auto p-4 space-y-4"
+                style={{
+                    height: 'calc(100vh - 120px)', // 헤더 + 입력창 높이 제외
+                    maxHeight: 'calc(100vh - 120px)'
+                }}
             >
                 {fetchingOlder && (
                     <div className="flex justify-center py-2">
@@ -210,7 +214,7 @@ export default function ChatRoomPage() {
                                 : 'bg-white text-gray-800 rounded-bl-none shadow-sm border border-gray-100'
                                 }`}
                         >
-                            <p className="text-sm">{msg.content}</p>
+                            <p className="text-sm break-words">{msg.content}</p>
                             <span className={`text-[10px] block text-right mt-1 ${msg.sender === currentUserId ? 'text-indigo-200' : 'text-gray-400'}`}>
                                 {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </span>
@@ -220,23 +224,25 @@ export default function ChatRoomPage() {
                 <div ref={messagesEndRef} />
             </div>
 
-            {/* Input */}
-            <form onSubmit={handleSendMessage} className="bg-white p-3 border-t flex items-center space-x-2">
-                <input
-                    type="text"
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="메시지를 입력하세요..."
-                    className="flex-1 bg-gray-100 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <button
-                    type="submit"
-                    disabled={loading || !newMessage.trim()}
-                    className="bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-700 disabled:opacity-50 transition-colors"
-                >
-                    <Send size={18} />
-                </button>
-            </form>
+            {/* Input - Fixed at bottom */}
+            <div className="sticky bottom-0 bg-white border-t border-gray-200 p-3 z-20">
+                <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
+                    <input
+                        type="text"
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        placeholder="메시지를 입력하세요..."
+                        className="flex-1 bg-gray-100 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                    <button
+                        type="submit"
+                        disabled={loading || !newMessage.trim()}
+                        className="bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-700 disabled:opacity-50 transition-colors flex-shrink-0"
+                    >
+                        <Send size={18} />
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }
