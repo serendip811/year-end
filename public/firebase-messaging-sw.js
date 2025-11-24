@@ -5,7 +5,7 @@ importScripts('https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js')
 
 // Initialize the Firebase app in the service worker by passing in the messagingSenderId.
 firebase.initializeApp({
-    messagingSenderId: 'YOUR_SENDER_ID_HERE', // This should be replaced or injected. 
+    messagingSenderId: '436853958682', // This should be replaced or injected. 
     // Since we can't easily inject env vars into static SW without build step, 
     // we might need to hardcode or fetch config. 
     // For now, we'll assume the user replaces this or we use a workaround.
