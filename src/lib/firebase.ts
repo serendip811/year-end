@@ -1,5 +1,5 @@
 import { initializeApp, getApps } from 'firebase/app';
-import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+import { getMessaging, getToken, onMessage, isSupported } from 'firebase/messaging';
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -14,6 +14,13 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0
 
 export const requestNotificationPermission = async () => {
     try {
+        // Check if messaging is supported
+        const messagingSupported = await isSupported();
+        if (!messagingSupported) {
+            console.log('Firebase Messaging is not supported in this browser');
+            return null;
+        }
+
         const messaging = getMessaging(app);
         const permission = await Notification.requestPermission();
         if (permission === 'granted') {
@@ -29,9 +36,18 @@ export const requestNotificationPermission = async () => {
 };
 
 export const onMessageListener = () =>
-    new Promise((resolve) => {
-        const messaging = getMessaging(app);
-        onMessage(messaging, (payload) => {
-            resolve(payload);
-        });
+    new Promise(async (resolve, reject) => {
+        try {
+            const messagingSupported = await isSupported();
+            if (!messagingSupported) {
+                reject('Messaging not supported');
+                return;
+            }
+            const messaging = getMessaging(app);
+            onMessage(messaging, (payload) => {
+                resolve(payload);
+            });
+        } catch (error) {
+            reject(error);
+        }
     });
