@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { comparePassword } from '@/lib/auth';
-import { setAuthCookie, signToken } from '@/lib/jwt';
+import { signToken } from '@/lib/jwt';
 
 export async function POST(request: Request) {
     try {
@@ -42,14 +42,22 @@ export async function POST(request: Request) {
         // Generate JWT
         const token = await signToken({ id: user.id, name: user.name });
 
-        // Set Cookie
-        setAuthCookie(token);
-
         // Check if the password used matches the initial_password (stored in plain text per schema)
         // If so, prompt for change.
         const mustChangePassword = password === user.initial_password;
 
-        return NextResponse.json({ success: true, user: { id: user.id, name: user.name }, mustChangePassword });
+        const response = NextResponse.json({ success: true, user: { id: user.id, name: user.name }, mustChangePassword });
+
+        // Set cookie in response
+        response.cookies.set('auth_token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 60 * 60 * 24 * 7, // 7 days
+            path: '/',
+        });
+
+        return response;
     } catch (error) {
         console.error('Login error:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
