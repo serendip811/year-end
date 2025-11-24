@@ -43,6 +43,17 @@ export default function FCMDebugger() {
             // Try to get FCM token
             try {
                 addLog('🔑 Requesting FCM token...');
+
+                // First, request permission explicitly
+                addLog('📱 Requesting notification permission...');
+                const permission = await Notification.requestPermission();
+                addLog(`📋 Permission result: ${permission}`);
+
+                if (permission !== 'granted') {
+                    addLog('❌ Permission not granted');
+                    return;
+                }
+
                 const token = await requestNotificationPermission();
 
                 if (token) {
@@ -67,10 +78,11 @@ export default function FCMDebugger() {
                         addLog(`❌ Network error saving token: ${error.message}`);
                     }
                 } else {
-                    addLog('❌ No token received (permission denied or error)');
+                    addLog('❌ No token received from Firebase');
                 }
             } catch (error: any) {
                 addLog(`❌ Error: ${error.message}`);
+                addLog(`❌ Stack: ${error.stack?.substring(0, 100)}`);
             }
         };
 
