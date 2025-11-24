@@ -28,22 +28,22 @@ export const requestNotificationPermission = async () => {
         const messaging = getMessaging(app);
         console.log('[Firebase] Messaging instance obtained');
 
-        console.log('[Firebase] Requesting permission...');
-        const permission = await Notification.requestPermission();
-        console.log('[Firebase] Permission result:', permission);
+        // Check current permission status
+        console.log('[Firebase] Current permission:', Notification.permission);
 
-        if (permission === 'granted') {
-            console.log('[Firebase] Getting token with VAPID key...');
-            console.log('[Firebase] VAPID key exists:', !!process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY);
-
-            const token = await getToken(messaging, {
-                vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
-            });
-            console.log('[Firebase] Token obtained:', token ? 'YES' : 'NO');
-            return token;
-        } else {
-            console.log('[Firebase] Permission not granted:', permission);
+        if (Notification.permission !== 'granted') {
+            console.log('[Firebase] Permission not granted, cannot get token');
+            return null;
         }
+
+        console.log('[Firebase] Getting token with VAPID key...');
+        console.log('[Firebase] VAPID key exists:', !!process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY);
+
+        const token = await getToken(messaging, {
+            vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
+        });
+        console.log('[Firebase] Token obtained:', token ? 'YES' : 'NO');
+        return token;
     } catch (error) {
         console.error('[Firebase] Error occurred:', error);
     }

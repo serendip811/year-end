@@ -16,6 +16,18 @@ export default function NotificationButton() {
     const handleEnableNotifications = async () => {
         setLoading(true);
         try {
+            // First, request permission
+            const permission = await Notification.requestPermission();
+            console.log('Permission requested:', permission);
+
+            if (permission !== 'granted') {
+                setPermission(permission);
+                toast.error('알림 권한이 거부되었습니다');
+                setLoading(false);
+                return;
+            }
+
+            // Permission granted, now get the token
             const token = await requestNotificationPermission();
 
             if (token) {
@@ -33,12 +45,7 @@ export default function NotificationButton() {
                     toast.error('알림 설정 저장에 실패했습니다');
                 }
             } else {
-                setPermission(Notification.permission);
-                if (Notification.permission === 'denied') {
-                    toast.error('알림 권한이 차단되었습니다. 브라우저 설정에서 허용해주세요.');
-                } else {
-                    toast.error('알림 권한을 허용해주세요');
-                }
+                toast.error('FCM 토큰을 가져올 수 없습니다');
             }
         } catch (error) {
             console.error('Notification error:', error);
