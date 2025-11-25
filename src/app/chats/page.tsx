@@ -3,78 +3,54 @@
 import Link from 'next/link';
 import { User, MessageCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { supabaseClient } from '@/lib/supabase-client';
-
-interface UserInfo {
-    id: string;
-    name: string;
-}
-
-interface Relationships {
-    user: UserInfo;
-    target: UserInfo | null;
-    manittoId: string | null;
-}
+import { useRelationships } from '@/hooks/useRelationships';
 
 export default function ChatsPage() {
-    const router = useRouter();
-    const [data, setData] = useState<Relationships | null>(null);
-    const [loading, setLoading] = useState(true);
+    const { data, isLoading } = useRelationships();
     const [unreadStatus, setUnreadStatus] = useState<{ [key: string]: boolean }>({});
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const res = await fetch('/api/auth/relationships');
-                if (res.ok) {
-                    const json = await res.json();
-                    setData(json);
+        if (!data) return;
 
-                    // Fetch latest messages for rooms
-                    if (json.manittoId || json.target) {
-                        const rooms = [];
-                        if (json.manittoId) rooms.push([json.user.id, json.manittoId].sort().join('_'));
-                        if (json.target) rooms.push([json.user.id, json.target.id].sort().join('_'));
+        const fetchUnreadStatus = async () => {
+            // Fetch latest messages for rooms
+            if (data.manittoId || data.target) {
+                const rooms = [];
+                if (data.manittoId) rooms.push([data.user.id, data.manittoId].sort().join('_'));
+                if (data.target) rooms.push([data.user.id, data.target.id].sort().join('_'));
 
-                        const status: { [key: string]: boolean } = {};
+                const status: { [key: string]: boolean } = {};
 
-                        for (const roomId of rooms) {
-                            const { data: messages } = await supabaseClient
-                                .from('messages')
-                                .select('created_at')
-                                .eq('room_id', roomId)
-                                .order('created_at', { ascending: false })
-                                .limit(1);
+                for (const roomId of rooms) {
+                    const { data: messages } = await supabaseClient
+                        .from('messages')
+                        .select('created_at')
+                        .eq('room_id', roomId)
+                        .order('created_at', { ascending: false })
+                        .limit(1);
 
-                            if (messages && messages.length > 0) {
-                                const lastMessageTime = new Date(messages[0].created_at).getTime();
-                                const lastReadTime = localStorage.getItem(`last_read_${roomId}`);
+                    if (messages && messages.length > 0) {
+                        const lastMessageTime = new Date(messages[0].created_at).getTime();
+                        const lastReadTime = localStorage.getItem(`last_read_${roomId}`);
 
-                                if (!lastReadTime || lastMessageTime > parseInt(lastReadTime)) {
-                                    status[roomId] = true;
-                                }
-                            }
+                        if (!lastReadTime || lastMessageTime > parseInt(lastReadTime)) {
+                            status[roomId] = true;
                         }
-                        setUnreadStatus(status);
                     }
-                } else {
-                    if (res.status === 401) router.push('/login');
                 }
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setLoading(false);
+                setUnreadStatus(status);
             }
         };
-        fetchData();
-    }, [router]);
+
+        fetchUnreadStatus();
+    }, [data]);
 
     const getRoomId = (id1: string, id2: string) => {
         return [id1, id2].sort().join('_');
     };
 
-    if (loading) return <div className="p-8 text-center">Loading...</div>;
+    if (isLoading) return <div className="p-8 text-center">Loading...</div>;
     if (!data) return <div className="p-8 text-center">Failed to load data</div>;
 
     return (

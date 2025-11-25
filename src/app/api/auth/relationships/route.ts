@@ -11,37 +11,31 @@ export async function GET() {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Fetch user data
-        const { data: user, error } = await supabaseAdmin
-            .from('users')
-            .select('id, name, manitto_to, manitto_from')
-            .eq('id', userPayload.id)
-            .single();
+        // RPC 호출 - 단 1번 요청으로 모든 정보 가져옴
+        const { data, error } = await supabaseAdmin.rpc(
+            'get_user_relationship',
+            { uid: userPayload.id }
+        );
 
-        if (error || !user) {
-            return NextResponse.json({ error: 'User not found' }, { status: 404 });
+        if (error || !data || data.length === 0) {
+            return NextResponse.json(
+                { error: 'User not found' },
+                { status: 404 }
+            );
         }
 
-        // Fetch target user in parallel if manitto_to exists
-        let targetUser = null;
-        if (user.manitto_to) {
-            const { data: target } = await supabaseAdmin
-                .from('users')
-                .select('id, name')
-                .eq('id', user.manitto_to)
-                .single();
-            targetUser = target;
-        }
+        const row = data[0]; // RPC는 배열 형태 반환
 
-        // Return response with caching headers
         return NextResponse.json(
             {
                 user: {
-                    id: user.id,
-                    name: user.name,
+                    id: row.user_id,
+                    name: row.user_name,
                 },
-                target: targetUser, // { id, name } or null
-                manittoId: user.manitto_from, // Just ID, keep name secret
+                target: row.target_id
+                    ? { id: row.target_id, name: row.target_name }
+                    : null,
+                manittoId: row.manitto_from,
             },
             {
                 headers: {
@@ -49,8 +43,12 @@ export async function GET() {
                 },
             }
         );
+
     } catch (error) {
         console.error('Relationship fetch error:', error);
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        return NextResponse.json(
+            { error: 'Internal Server Error' },
+            { status: 500 }
+        );
     }
 }

@@ -3,20 +3,8 @@
 import Link from 'next/link';
 import { MessageCircle, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import DailyMessageChart from '@/components/DailyMessageChart';
-
-
-interface UserInfo {
-  id: string;
-  name: string;
-}
-
-interface Relationships {
-  user: UserInfo;
-  target: UserInfo | null;
-  manittoId: string | null;
-}
+import { useRelationships } from '@/hooks/useRelationships';
 
 interface MessageStats {
   manitto: { sent: number; received: number };
@@ -30,31 +18,11 @@ interface DailyCount {
 }
 
 export default function DashboardPage() {
-  const router = useRouter();
-  const [data, setData] = useState<Relationships | null>(null);
+  const { data, isLoading } = useRelationships();
   const [stats, setStats] = useState<MessageStats | null>(null);
   const [dailyStats, setDailyStats] = useState<DailyCount[]>([]);
-  const [loading, setLoading] = useState(true);
-
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch('/api/auth/relationships');
-        if (res.ok) {
-          const json = await res.json();
-          setData(json);
-        } else {
-          // If unauthorized, redirect to login
-          if (res.status === 401) router.push('/login');
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     const fetchStats = async () => {
       try {
         const res = await fetch('/api/messages/stats');
@@ -79,10 +47,9 @@ export default function DashboardPage() {
       }
     };
 
-    fetchData();
     fetchStats();
     fetchDailyStats();
-  }, [router]);
+  }, []);
 
 
   const getRoomId = (id1: string, id2: string) => {
@@ -91,7 +58,7 @@ export default function DashboardPage() {
 
 
 
-  if (loading) return <div className="p-8 text-center">Loading...</div>;
+  if (isLoading) return <div className="p-8 text-center">Loading...</div>;
   if (!data) return <div className="p-8 text-center">Failed to load data</div>;
 
   return (
