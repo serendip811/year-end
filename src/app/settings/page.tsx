@@ -5,9 +5,11 @@ import { LogOut } from 'lucide-react';
 import toast from 'react-hot-toast';
 import NotificationButton from '@/components/NotificationButton';
 import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function SettingsPage() {
     const router = useRouter();
+    const queryClient = useQueryClient();
     const [fcmDebugEnabled, setFcmDebugEnabled] = useState(false);
 
     useEffect(() => {
@@ -23,6 +25,28 @@ export default function SettingsPage() {
             });
 
             if (response.ok) {
+                // 1. React Query 캐시 초기화
+                queryClient.clear();
+
+                // 2. localStorage 초기화
+                localStorage.removeItem('relationships_cache');
+                // FCM 디버그 설정은 유지하려면 주석 처리
+                // localStorage.removeItem('fcm_debug_enabled');
+
+                // 3. Service Worker 캐시 초기화 (선택적)
+                if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                    try {
+                        const registration = await navigator.serviceWorker.ready;
+                        // Service Worker 등록 해제 대신 캐시만 삭제
+                        const cacheNames = await caches.keys();
+                        await Promise.all(
+                            cacheNames.map(cacheName => caches.delete(cacheName))
+                        );
+                    } catch (swError) {
+                        console.warn('Service Worker cache cleanup failed:', swError);
+                    }
+                }
+
                 toast.success('로그아웃 되었습니다.');
                 router.push('/login');
                 router.refresh(); // Refresh to update middleware/server state if needed
