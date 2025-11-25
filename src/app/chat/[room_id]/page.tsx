@@ -94,6 +94,9 @@ export default function ChatRoomPage() {
 
         fetchMessages();
 
+        // Update last read time on initial load
+        localStorage.setItem(`last_read_${roomId}`, Date.now().toString());
+
         const channel = supabaseClient
             .channel(`room:${roomId}`)
             .on(
@@ -110,6 +113,9 @@ export default function ChatRoomPage() {
                     setTimeout(() => {
                         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
                     }, 100);
+
+                    // Update last read time when new message arrives and user is in the room
+                    localStorage.setItem(`last_read_${roomId}`, Date.now().toString());
                 }
             )
             .subscribe();

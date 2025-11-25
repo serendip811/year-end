@@ -11,6 +11,7 @@ export async function GET() {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
+        // Fetch user data
         const { data: user, error } = await supabaseAdmin
             .from('users')
             .select('id, name, manitto_to, manitto_from')
@@ -21,7 +22,7 @@ export async function GET() {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
 
-        // Fetch details of the target (manitto_to)
+        // Fetch target user in parallel if manitto_to exists
         let targetUser = null;
         if (user.manitto_to) {
             const { data: target } = await supabaseAdmin
@@ -32,18 +33,22 @@ export async function GET() {
             targetUser = target;
         }
 
-        // Fetch details of the manitto (manitto_from) - but keep name secret if needed?
-        // Actually, for the room ID we just need the ID.
-        // The UI might want to show "Secret Friend" instead of name.
-
-        return NextResponse.json({
-            user: {
-                id: user.id,
-                name: user.name,
+        // Return response with caching headers
+        return NextResponse.json(
+            {
+                user: {
+                    id: user.id,
+                    name: user.name,
+                },
+                target: targetUser, // { id, name } or null
+                manittoId: user.manitto_from, // Just ID, keep name secret
             },
-            target: targetUser, // { id, name }
-            manittoId: user.manitto_from, // Just ID, keep name secret
-        });
+            {
+                headers: {
+                    'Cache-Control': 'private, max-age=60, stale-while-revalidate=30',
+                },
+            }
+        );
     } catch (error) {
         console.error('Relationship fetch error:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

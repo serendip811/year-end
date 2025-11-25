@@ -5,6 +5,8 @@ import { MessageCircle, User, LogOut } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import NotificationButton from '@/components/NotificationButton';
+import DailyMessageChart from '@/components/DailyMessageChart';
+
 
 interface UserInfo {
   id: string;
@@ -17,10 +19,24 @@ interface Relationships {
   manittoId: string | null;
 }
 
+interface MessageStats {
+  manitto: { sent: number; received: number };
+  target: { sent: number; received: number };
+}
+
+interface DailyCount {
+  date: string;
+  manitto: number;
+  target: number;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const [data, setData] = useState<Relationships | null>(null);
+  const [stats, setStats] = useState<MessageStats | null>(null);
+  const [dailyStats, setDailyStats] = useState<DailyCount[]>([]);
   const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,8 +55,36 @@ export default function DashboardPage() {
         setLoading(false);
       }
     };
+
+    const fetchStats = async () => {
+      try {
+        const res = await fetch('/api/messages/stats');
+        if (res.ok) {
+          const json = await res.json();
+          setStats(json);
+        }
+      } catch (error) {
+        console.error('Failed to fetch stats:', error);
+      }
+    };
+
+    const fetchDailyStats = async () => {
+      try {
+        const res = await fetch('/api/messages/daily-stats');
+        if (res.ok) {
+          const json = await res.json();
+          setDailyStats(json);
+        }
+      } catch (error) {
+        console.error('Failed to fetch daily stats:', error);
+      }
+    };
+
     fetchData();
+    fetchStats();
+    fetchDailyStats();
   }, [router]);
+
 
   const getRoomId = (id1: string, id2: string) => {
     return [id1, id2].sort().join('_');
@@ -73,42 +117,55 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             {/* Chat with Manitto (Anonymous) */}
             {data.manittoId ? (
-              <Link href={`/chat/${getRoomId(data.user.id, data.manittoId)}`} className="block">
-                <div className="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow cursor-pointer p-6 flex items-center space-x-4">
-                  <div className="bg-indigo-100 p-3 rounded-full">
-                    <User className="text-indigo-600" size={32} />
+              <div className="bg-white overflow-hidden shadow rounded-lg">
+                <Link href={`/chat/${getRoomId(data.user.id, data.manittoId)}`} className="block">
+                  <div className="hover:shadow-md transition-shadow cursor-pointer p-6 flex items-center space-x-4">
+                    <div className="bg-indigo-100 p-3 rounded-full">
+                      <User className="text-indigo-600" size={32} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-medium text-gray-900">비밀친구 (My Manitto)</h3>
+                      <p className="text-sm text-gray-500">나를 챙겨주는 비밀친구와의 대화</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900">비밀친구 (My Manitto)</h3>
-                    <p className="text-sm text-gray-500">나를 챙겨주는 비밀친구와의 대화</p>
-                  </div>
-                </div>
-              </Link>
+                </Link>
+              </div>
             ) : (
               <div className="bg-gray-100 p-6 rounded-lg text-gray-500">
                 아직 마니또가 배정되지 않았습니다.
               </div>
             )}
 
+
             {/* Chat with Target (Real Name) */}
             {data.target ? (
-              <Link href={`/chat/${getRoomId(data.user.id, data.target.id)}`} className="block">
-                <div className="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow cursor-pointer p-6 flex items-center space-x-4">
-                  <div className="bg-green-100 p-3 rounded-full">
-                    <MessageCircle className="text-green-600" size={32} />
+              <div className="bg-white overflow-hidden shadow rounded-lg">
+                <Link href={`/chat/${getRoomId(data.user.id, data.target.id)}`} className="block">
+                  <div className="hover:shadow-md transition-shadow cursor-pointer p-6 flex items-center space-x-4">
+                    <div className="bg-green-100 p-3 rounded-full">
+                      <MessageCircle className="text-green-600" size={32} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-medium text-gray-900">내 마니또 대상 ({data.target.name})</h3>
+                      <p className="text-sm text-gray-500">내가 챙겨야 할 사람과의 대화</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900">내 마니또 대상 ({data.target.name})</h3>
-                    <p className="text-sm text-gray-500">내가 챙겨야 할 사람과의 대화</p>
-                  </div>
-                </div>
-              </Link>
+                </Link>
+              </div>
             ) : (
               <div className="bg-gray-100 p-6 rounded-lg text-gray-500">
                 아직 대상이 배정되지 않았습니다.
               </div>
             )}
+
           </div>
+
+          {/* Daily Message Chart */}
+          {dailyStats.length > 0 && (
+            <div className="mt-6">
+              <DailyMessageChart data={dailyStats} />
+            </div>
+          )}
         </div>
       </main>
     </div>
