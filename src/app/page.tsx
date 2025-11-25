@@ -1,10 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { MessageCircle, User, LogOut } from 'lucide-react';
+import { MessageCircle, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import NotificationButton from '@/components/NotificationButton';
 import DailyMessageChart from '@/components/DailyMessageChart';
 
 
@@ -90,11 +89,7 @@ export default function DashboardPage() {
     return [id1, id2].sort().join('_');
   };
 
-  const handleLogout = async () => {
-    // Implement logout logic here (clear cookie)
-    // For now just redirect
-    router.push('/login');
-  };
+
 
   if (loading) return <div className="p-8 text-center">Loading...</div>;
   if (!data) return <div className="p-8 text-center">Failed to load data</div>;
@@ -103,13 +98,8 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard ({data.user.name})</h1>
-          <div className="flex items-center space-x-2">
-            <NotificationButton />
-            <button onClick={handleLogout} className="text-gray-500 hover:text-gray-700">
-              <LogOut size={24} />
-            </button>
-          </div>
+          <h1 className="text-3xl font-bold text-gray-900">카모빌링 마니또 채팅</h1>
+
         </div>
       </header>
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">

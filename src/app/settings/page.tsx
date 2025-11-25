@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { LogOut } from 'lucide-react';
 import toast from 'react-hot-toast';
+import NotificationButton from '@/components/NotificationButton';
 
 export default function SettingsPage() {
     const router = useRouter();
@@ -30,7 +31,12 @@ export default function SettingsPage() {
         <div className="p-4">
             <h1 className="text-2xl font-bold mb-6">설정</h1>
 
-            <div className="bg-white rounded-lg shadow p-4">
+            <div className="bg-white rounded-lg shadow p-4 space-y-4">
+                <div className="flex items-center justify-between p-3 border-b border-gray-100">
+                    <span className="font-medium text-gray-700">알림 설정</span>
+                    <NotificationButton />
+                </div>
+
                 <button
                     onClick={handleLogout}
                     className="w-full flex items-center justify-between p-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
