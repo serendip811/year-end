@@ -3,6 +3,8 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 import { comparePassword, hashPassword } from '@/lib/auth';
 import { getUserFromCookie } from '@/lib/jwt';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
     try {
         const userPayload = await getUserFromCookie();

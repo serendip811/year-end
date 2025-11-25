@@ -42,13 +42,16 @@ export async function sendPushNotification(
                 body: JSON.stringify({
                     message: {
                         token: fcmToken,
-                        notification: {
+                        // Use data-only message to handle both foreground and background
+                        data: {
                             title,
                             body,
+                            ...(data || {}),
                         },
-                        data: data || {},
                         webpush: {
                             notification: {
+                                title,
+                                body,
                                 icon: '/icons/icon-192.png',
                             },
                             fcm_options: {

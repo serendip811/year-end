@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { getUserFromCookie } from '@/lib/jwt';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
     try {
         const userPayload = await getUserFromCookie();

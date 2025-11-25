@@ -3,6 +3,8 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 import { comparePassword } from '@/lib/auth';
 import { signToken } from '@/lib/jwt';
 
+export const dynamic = 'force-dynamic';
+
 export async function OPTIONS(request: Request) {
     return new NextResponse(null, {
         status: 204,

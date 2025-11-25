@@ -3,6 +3,8 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 import { getUserFromCookie } from '@/lib/jwt';
 import { sendPushNotification } from '@/lib/fcm';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
     try {
         const user = await getUserFromCookie();
