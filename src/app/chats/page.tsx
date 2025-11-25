@@ -62,7 +62,7 @@ export default function ChatsPage() {
             <div className="divide-y divide-gray-100">
                 {/* Chat with Manitto (Anonymous) */}
                 {data.manittoId ? (
-                    <Link href={`/chat/${getRoomId(data.user.id, data.manittoId)}`} className="block hover:bg-gray-50 transition-colors">
+                    <Link href={`/chat/${getRoomId(data.user.id, data.manittoId)}`} className="block hover:bg-gray-50 active:bg-gray-100 transition-all duration-150">
                         <div className="px-4 py-3 flex items-center space-x-3">
                             <div className="relative">
                                 <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center">
@@ -87,7 +87,7 @@ export default function ChatsPage() {
 
                 {/* Chat with Target (Real Name) */}
                 {data.target ? (
-                    <Link href={`/chat/${getRoomId(data.user.id, data.target.id)}`} className="block hover:bg-gray-50 transition-colors">
+                    <Link href={`/chat/${getRoomId(data.user.id, data.target.id)}`} className="block hover:bg-gray-50 active:bg-gray-100 transition-all duration-150">
                         <div className="px-4 py-3 flex items-center space-x-3">
                             <div className="relative">
                                 <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">

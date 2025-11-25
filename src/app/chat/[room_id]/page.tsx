@@ -246,9 +246,9 @@ export default function ChatRoomPage() {
                     <button
                         type="submit"
                         disabled={loading || !newMessage.trim()}
-                        className="bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-700 disabled:opacity-50 transition-colors flex-shrink-0"
+                        className="bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-95 flex-shrink-0"
                     >
-                        <Send size={18} />
+                        {loading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
                     </button>
                 </form>
             </div>

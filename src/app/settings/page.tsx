@@ -101,7 +101,7 @@ export default function SettingsPage() {
 
                 <button
                     onClick={handleLogout}
-                    className="w-full flex items-center justify-between p-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    className="w-full flex items-center justify-between p-3 text-red-600 hover:bg-red-50 active:bg-red-100 rounded-lg transition-all duration-200 active:scale-[0.98]"
                 >
                     <span className="font-medium">로그아웃</span>
                     <LogOut size={20} />

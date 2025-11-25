@@ -6,6 +6,7 @@ import FCMHandler from "@/components/FCMHandler";
 import FCMDebugger from "@/components/FCMDebugger";
 import BottomNav from "@/components/BottomNav";
 import QueryProvider from "@/components/QueryProvider";
+import LoadingBar from "@/components/LoadingBar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,6 +32,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <QueryProvider>
+          <LoadingBar />
           <FCMHandler />
           <FCMDebugger />
           <div className="h-screen bg-gray-100 flex justify-center overflow-hidden">
