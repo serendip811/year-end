@@ -159,16 +159,23 @@ next-pwa 사용.
 ## 11. 필요한 환경 변수(.env)
 
 ```env
-SUPABASE_URL=
-SUPABASE_ANON_KEY=
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_KEY=
 
 JWT_SECRET=
 
-FCM_SERVER_KEY=
+# Firebase Configuration (for client-side)
 NEXT_PUBLIC_FIREBASE_API_KEY=
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=
 NEXT_PUBLIC_FIREBASE_SENDER_ID=
 NEXT_PUBLIC_FIREBASE_APP_ID=
 NEXT_PUBLIC_FIREBASE_VAPID_KEY=
+
+# Firebase Service Account (for server-side FCM HTTP v1 API)
+# Get this from Firebase Console > Project Settings > Service Accounts > Generate new private key
+FIREBASE_SERVICE_ACCOUNT_JSON={"type":"service_account","project_id":"...","private_key":"...","client_email":"..."}
+
+# Optional: App URL for push notification click actions
+NEXT_PUBLIC_APP_URL=https://your-app.vercel.app
 ```

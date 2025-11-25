@@ -16,6 +16,7 @@
     "date-fns": "^4.1.0",
     "firebase": "^12.6.0",
     "framer-motion": "^12.23.24",
+    "googleapis": "^166.0.0",
     "jose": "^6.1.2",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.554.0",
