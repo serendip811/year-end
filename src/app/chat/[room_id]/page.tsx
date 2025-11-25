@@ -47,25 +47,25 @@ export default function ChatRoomPage() {
     const fetchMessages = useCallback(async (before?: string) => {
         if (!roomId) return;
 
-        let query = supabaseClient
-            .from('messages')
-            .select('*')
-            .eq('room_id', roomId)
-            .order('created_at', { ascending: false })
-            .limit(MESSAGES_PER_PAGE);
+        try {
+            const params = new URLSearchParams({
+                room_id: roomId,
+                limit: String(MESSAGES_PER_PAGE),
+            });
 
-        if (before) {
-            query = query.lt('created_at', before);
-        }
+            if (before) {
+                params.append('before', before);
+            }
 
-        const { data, error } = await query;
+            const res = await fetch(`/api/messages/list?${params}`);
 
-        if (error) {
-            toast.error('Failed to load messages');
-            return;
-        }
+            if (!res.ok) {
+                toast.error('Failed to load messages');
+                return;
+            }
 
-        if (data) {
+            const data = await res.json();
+
             if (data.length < MESSAGES_PER_PAGE) {
                 setHasMore(false);
             }
@@ -79,6 +79,9 @@ export default function ChatRoomPage() {
                     return newMessages;
                 }
             });
+        } catch (error) {
+            console.error('Error fetching messages:', error);
+            toast.error('Failed to load messages');
         }
     }, [roomId]);
 

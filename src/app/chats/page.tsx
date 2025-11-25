@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { User, MessageCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { supabaseClient } from '@/lib/supabase-client';
 import { useRelationships } from '@/hooks/useRelationships';
 
 export default function ChatsPage() {
@@ -20,26 +19,27 @@ export default function ChatsPage() {
                 if (data.manittoId) rooms.push([data.user.id, data.manittoId].sort().join('_'));
                 if (data.target) rooms.push([data.user.id, data.target.id].sort().join('_'));
 
-                const status: { [key: string]: boolean } = {};
+                try {
+                    const res = await fetch(`/api/messages/last-message?room_ids=${rooms.join(',')}`);
+                    if (!res.ok) return;
 
-                for (const roomId of rooms) {
-                    const { data: messages } = await supabaseClient
-                        .from('messages')
-                        .select('created_at')
-                        .eq('room_id', roomId)
-                        .order('created_at', { ascending: false })
-                        .limit(1);
+                    const lastMessages = await res.json();
+                    const status: { [key: string]: boolean } = {};
 
-                    if (messages && messages.length > 0) {
-                        const lastMessageTime = new Date(messages[0].created_at).getTime();
-                        const lastReadTime = localStorage.getItem(`last_read_${roomId}`);
+                    for (const roomId of rooms) {
+                        if (lastMessages[roomId]) {
+                            const lastMessageTime = new Date(lastMessages[roomId]).getTime();
+                            const lastReadTime = localStorage.getItem(`last_read_${roomId}`);
 
-                        if (!lastReadTime || lastMessageTime > parseInt(lastReadTime)) {
-                            status[roomId] = true;
+                            if (!lastReadTime || lastMessageTime > parseInt(lastReadTime)) {
+                                status[roomId] = true;
+                            }
                         }
                     }
+                    setUnreadStatus(status);
+                } catch (error) {
+                    console.error('Error fetching unread status:', error);
                 }
-                setUnreadStatus(status);
             }
         };
 
