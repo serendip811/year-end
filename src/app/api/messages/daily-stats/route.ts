@@ -4,8 +4,8 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 
 interface DailyCount {
     date: string;
-    manitto: number;
-    target: number;
+    manitto: { sent: number; received: number };
+    target: { sent: number; received: number };
 }
 
 export async function GET(req: NextRequest) {
@@ -35,7 +35,10 @@ export async function GET(req: NextRequest) {
         };
 
         // Initialize daily counts map
-        const dailyCountsMap = new Map<string, { manitto: number; target: number }>();
+        const dailyCountsMap = new Map<string, {
+            manitto: { sent: number; received: number };
+            target: { sent: number; received: number };
+        }>();
 
         // Initialize all dates in the last 30 days with 0 counts (based on KST)
         const now = new Date();
@@ -43,14 +46,17 @@ export async function GET(req: NextRequest) {
             const date = new Date(now);
             date.setDate(date.getDate() - i);
             const dateStr = getKSTDateString(date);
-            dailyCountsMap.set(dateStr, { manitto: 0, target: 0 });
+            dailyCountsMap.set(dateStr, {
+                manitto: { sent: 0, received: 0 },
+                target: { sent: 0, received: 0 }
+            });
         }
 
         // Get manitto messages
         if (user.manitto_from) {
             const { data: manittoMessages } = await supabaseAdmin
                 .from('messages')
-                .select('created_at')
+                .select('created_at, sender')
                 // Fetch a bit more than 30 days to cover timezone differences
                 .gte('created_at', new Date(Date.now() - 31 * 24 * 60 * 60 * 1000).toISOString())
                 .or(`and(sender.eq.${userId},receiver.eq.${user.manitto_from}),and(sender.eq.${user.manitto_from},receiver.eq.${userId})`);
@@ -61,7 +67,11 @@ export async function GET(req: NextRequest) {
                     // Only count if it's within our map (last 30 days KST)
                     const counts = dailyCountsMap.get(dateStr);
                     if (counts) {
-                        counts.manitto++;
+                        if (msg.sender === userId) {
+                            counts.manitto.sent++;
+                        } else {
+                            counts.manitto.received++;
+                        }
                     }
                 });
             }
@@ -71,7 +81,7 @@ export async function GET(req: NextRequest) {
         if (user.manitto_to) {
             const { data: targetMessages } = await supabaseAdmin
                 .from('messages')
-                .select('created_at')
+                .select('created_at, sender')
                 .gte('created_at', new Date(Date.now() - 31 * 24 * 60 * 60 * 1000).toISOString())
                 .or(`and(sender.eq.${userId},receiver.eq.${user.manitto_to}),and(sender.eq.${user.manitto_to},receiver.eq.${userId})`);
 
@@ -80,7 +90,11 @@ export async function GET(req: NextRequest) {
                     const dateStr = getKSTDateString(msg.created_at);
                     const counts = dailyCountsMap.get(dateStr);
                     if (counts) {
-                        counts.target++;
+                        if (msg.sender === userId) {
+                            counts.target.sent++;
+                        } else {
+                            counts.target.received++;
+                        }
                     }
                 });
             }

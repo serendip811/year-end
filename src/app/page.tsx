@@ -1,10 +1,9 @@
 'use client';
 
-import Link from 'next/link';
-import { MessageCircle, User } from 'lucide-react';
+import { ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import DailyMessageChart from '@/components/DailyMessageChart';
 import { useRelationships } from '@/hooks/useRelationships';
+import RelationshipChart from '@/components/RelationshipChart';
 
 interface MessageStats {
   manitto: { sent: number; received: number };
@@ -13,8 +12,8 @@ interface MessageStats {
 
 interface DailyCount {
   date: string;
-  manitto: number;
-  target: number;
+  manitto: { sent: number; received: number };
+  target: { sent: number; received: number };
 }
 
 export default function DashboardPage() {
@@ -52,78 +51,115 @@ export default function DashboardPage() {
   }, []);
 
 
-  const getRoomId = (id1: string, id2: string) => {
-    return [id1, id2].sort().join('_');
-  };
-
-
 
   if (isLoading) return <div className="p-8 text-center">Loading...</div>;
   if (!data) return <div className="p-8 text-center">Failed to load data</div>;
 
+  const manittoChartData = dailyStats.map(item => ({
+    date: item.date,
+    sent: item.manitto.sent,
+    received: item.manitto.received
+  }));
+
+  const targetChartData = dailyStats.map(item => ({
+    date: item.date,
+    sent: item.target.sent,
+    received: item.target.received
+  }));
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">카모빌링 마니또 채팅</h1>
-
-        </div>
+    <div className="h-full bg-white overflow-y-auto">
+      <header className="px-4 py-3 border-b border-gray-200">
+        <h1 className="text-xl font-bold text-gray-900">홈</h1>
       </header>
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            {/* Chat with Manitto (Anonymous) */}
-            {data.manittoId ? (
-              <div className="bg-white overflow-hidden shadow rounded-lg">
-                <Link href={`/chat/${getRoomId(data.user.id, data.manittoId)}`} className="block">
-                  <div className="hover:shadow-md transition-shadow cursor-pointer p-6 flex items-center space-x-4">
-                    <div className="bg-indigo-100 p-3 rounded-full">
-                      <User className="text-indigo-600" size={32} />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-medium text-gray-900">비밀친구 (My Manitto)</h3>
-                      <p className="text-sm text-gray-500">나를 챙겨주는 비밀친구와의 대화</p>
-                    </div>
+      <main className="p-4 space-y-3">
+        {/* 비밀친구와의 대화 통계 */}
+        {data.manittoId && (
+          <>
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
+              <h2 className="text-sm font-semibold text-gray-900 mb-2">
+                비밀친구 (My Manitto)
+              </h2>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="bg-indigo-50 rounded-lg p-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-medium text-indigo-900">보냄</span>
+                    <ArrowUpRight className="text-indigo-600" size={14} />
                   </div>
-                </Link>
-              </div>
-            ) : (
-              <div className="bg-gray-100 p-6 rounded-lg text-gray-500">
-                아직 마니또가 배정되지 않았습니다.
-              </div>
-            )}
-
-
-            {/* Chat with Target (Real Name) */}
-            {data.target ? (
-              <div className="bg-white overflow-hidden shadow rounded-lg">
-                <Link href={`/chat/${getRoomId(data.user.id, data.target.id)}`} className="block">
-                  <div className="hover:shadow-md transition-shadow cursor-pointer p-6 flex items-center space-x-4">
-                    <div className="bg-green-100 p-3 rounded-full">
-                      <MessageCircle className="text-green-600" size={32} />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-medium text-gray-900">내 마니또 대상 ({data.target.name})</h3>
-                      <p className="text-sm text-gray-500">내가 챙겨야 할 사람과의 대화</p>
-                    </div>
+                  <p className="text-xl font-bold text-indigo-600">
+                    {stats?.manitto.sent || 0}
+                  </p>
+                </div>
+                <div className="bg-indigo-50 rounded-lg p-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-medium text-indigo-900">받음</span>
+                    <ArrowDownLeft className="text-indigo-600" size={14} />
                   </div>
-                </Link>
+                  <p className="text-xl font-bold text-indigo-600">
+                    {stats?.manitto.received || 0}
+                  </p>
+                </div>
+                <div className="bg-indigo-100 rounded-lg p-2">
+                  <span className="text-xs font-medium text-indigo-900">총계</span>
+                  <p className="text-xl font-bold text-indigo-600">
+                    {(stats?.manitto.sent || 0) + (stats?.manitto.received || 0)}
+                  </p>
+                </div>
               </div>
-            ) : (
-              <div className="bg-gray-100 p-6 rounded-lg text-gray-500">
-                아직 대상이 배정되지 않았습니다.
-              </div>
-            )}
-
-          </div>
-
-          {/* Daily Message Chart */}
-          {dailyStats.length > 0 && (
-            <div className="mt-6">
-              <DailyMessageChart data={dailyStats} />
             </div>
-          )}
-        </div>
+            {dailyStats.length > 0 && (
+              <RelationshipChart
+                data={manittoChartData}
+                title="비밀친구와의 대화"
+                color="indigo"
+              />
+            )}
+          </>
+        )}
+
+        {/* 내 마니또 대상과의 대화 통계 */}
+        {data.target && (
+          <>
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
+              <h2 className="text-sm font-semibold text-gray-900 mb-2">
+                내 마니또 대상 ({data.target.name})
+              </h2>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="bg-green-50 rounded-lg p-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-medium text-green-900">보냄</span>
+                    <ArrowUpRight className="text-green-600" size={14} />
+                  </div>
+                  <p className="text-xl font-bold text-green-600">
+                    {stats?.target.sent || 0}
+                  </p>
+                </div>
+                <div className="bg-green-50 rounded-lg p-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-medium text-green-900">받음</span>
+                    <ArrowDownLeft className="text-green-600" size={14} />
+                  </div>
+                  <p className="text-xl font-bold text-green-600">
+                    {stats?.target.received || 0}
+                  </p>
+                </div>
+                <div className="bg-green-100 rounded-lg p-2">
+                  <span className="text-xs font-medium text-green-900">총계</span>
+                  <p className="text-xl font-bold text-green-600">
+                    {(stats?.target.sent || 0) + (stats?.target.received || 0)}
+                  </p>
+                </div>
+              </div>
+            </div>
+            {dailyStats.length > 0 && (
+              <RelationshipChart
+                data={targetChartData}
+                title="내 마니또 대상과의 대화"
+                color="green"
+              />
+            )}
+          </>
+        )}
       </main>
     </div>
   );
