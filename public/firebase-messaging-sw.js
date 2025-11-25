@@ -3,13 +3,14 @@
 importScripts('https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js');
 importScripts('https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js');
 
-// Initialize the Firebase app in the service worker by passing in the messagingSenderId.
+// Initialize the Firebase app in the service worker
 firebase.initializeApp({
-    messagingSenderId: '436853958682', // This should be replaced or injected. 
-    // Since we can't easily inject env vars into static SW without build step, 
-    // we might need to hardcode or fetch config. 
-    // For now, we'll assume the user replaces this or we use a workaround.
-    // Actually, next-pwa might handle this if we configure it right, but usually SW is static.
+    apiKey: "AIzaSyBr9GAV4YfL-Onm5wMl-psu13CghOcsGGg",
+    authDomain: "year-end-cc1e0.firebaseapp.com",
+    projectId: "year-end-cc1e0",
+    storageBucket: "year-end-cc1e0.firebasestorage.app",
+    messagingSenderId: "436853958682",
+    appId: "1:436853958682:web:610c633d206e61679149a3"
 });
 
 const messaging = firebase.messaging();
