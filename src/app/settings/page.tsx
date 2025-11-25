@@ -28,12 +28,12 @@ export default function SettingsPage() {
     };
 
     return (
-        <div className="p-4">
-            <h1 className="text-2xl font-bold mb-6">설정</h1>
+        <div className="p-4 bg-white min-h-screen">
+            <h1 className="text-2xl font-bold mb-6 text-gray-900">설정</h1>
 
             <div className="bg-white rounded-lg shadow p-4 space-y-4">
                 <div className="flex items-center justify-between p-3 border-b border-gray-100">
-                    <span className="font-medium text-gray-700">알림 설정</span>
+                    <span className="font-medium text-gray-900">알림 설정</span>
                     <NotificationButton />
                 </div>
 

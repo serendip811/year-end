@@ -54,8 +54,8 @@ export default function ChatsPage() {
     if (!data) return <div className="p-8 text-center">Failed to load data</div>;
 
     return (
-        <div className="min-h-screen bg-white">
-            <header className="px-4 py-3 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
+        <div className="h-full bg-white">
+            <header className="px-4 py-3 border-b border-gray-100">
                 <h1 className="text-xl font-bold text-gray-900">채팅</h1>
             </header>
 

@@ -33,9 +33,9 @@ export default function RootLayout({
         <QueryProvider>
           <FCMHandler />
           <FCMDebugger />
-          <div className="min-h-screen bg-gray-100 flex justify-center">
-            <div className="w-full max-w-md bg-white min-h-screen shadow-2xl relative flex flex-col">
-              <div className="flex-1 pb-16">
+          <div className="h-screen bg-gray-100 flex justify-center overflow-hidden">
+            <div className="w-full max-w-md bg-white h-full shadow-2xl relative flex flex-col">
+              <div className="flex-1 pb-16 overflow-hidden">
                 {children}
               </div>
               <BottomNav />
