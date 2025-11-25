@@ -8,13 +8,11 @@ async function getAccessToken(): Promise<string> {
         process.env.FIREBASE_SERVICE_ACCOUNT_JSON || '{}'
     );
 
-    const jwtClient = new google.auth.JWT(
-        serviceAccount.client_email,
-        undefined,
-        serviceAccount.private_key,
-        ['https://www.googleapis.com/auth/firebase.messaging'],
-        undefined
-    );
+    const jwtClient = new google.auth.JWT({
+        email: serviceAccount.client_email,
+        key: serviceAccount.private_key,
+        scopes: ['https://www.googleapis.com/auth/firebase.messaging'],
+    });
 
     const tokens = await jwtClient.authorize();
     return tokens.access_token || '';
