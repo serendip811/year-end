@@ -30,11 +30,10 @@ export default function BottomNav() {
                 <MessageCircle size={24} />
                 <span className="text-xs mt-1">채팅</span>
             </Link>
-            {/* Optional: Profile or Settings tab */}
-            {/* <Link href="/profile" className={`flex flex-col items-center justify-center w-full h-full ${isActive('/profile') ? 'text-indigo-600' : 'text-gray-500'}`}>
-        <User size={24} />
-        <span className="text-xs mt-1">내 정보</span>
-      </Link> */}
+            <Link href="/settings" className={`flex flex-col items-center justify-center w-full h-full ${isActive('/settings') ? 'text-indigo-600' : 'text-gray-500'}`}>
+                <User size={24} />
+                <span className="text-xs mt-1">설정</span>
+            </Link>
         </div>
     );
 }
