@@ -15,18 +15,28 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Token is required' }, { status: 400 });
         }
 
-        // Upsert token
-        const { error } = await supabaseAdmin
+        // Delete existing tokens for this user (a user should only have one active token)
+        const { error: deleteError } = await supabaseAdmin
             .from('push_tokens')
-            .upsert({
+            .delete()
+            .eq('user_id', user.id);
+
+        if (deleteError) {
+            console.error('Token delete error:', deleteError);
+        }
+
+        // Insert new token
+        const { error: insertError } = await supabaseAdmin
+            .from('push_tokens')
+            .insert({
                 user_id: user.id,
                 token: token,
                 updated_at: new Date().toISOString(),
-            }, { onConflict: 'token' });
+            });
 
-        if (error) {
-            console.error('Token save error:', error);
-            return NextResponse.json({ error: 'Failed to save token' }, { status: 500 });
+        if (insertError) {
+            console.error('Token insert error:', insertError);
+            return NextResponse.json({ error: 'Failed to save token', details: insertError.message }, { status: 500 });
         }
 
         return NextResponse.json({ success: true });
