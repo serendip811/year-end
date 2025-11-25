@@ -231,14 +231,14 @@ export default function ChatRoomPage() {
             </div>
 
             {/* Input - Fixed at bottom */}
-            <div className="sticky bottom-0 bg-white border-t border-gray-200 p-3 z-20">
+            <div className="sticky bottom-0 bg-white border-t border-gray-200 px-3 py-2 z-20">
                 <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
                     <input
                         type="text"
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         placeholder="메시지를 입력하세요..."
-                        className="flex-1 bg-gray-100 rounded-full px-4 py-2 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="flex-1 bg-gray-100 rounded-full px-4 py-1.5 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                     <button
                         type="submit"

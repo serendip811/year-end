@@ -4,9 +4,17 @@ import { useRouter } from 'next/navigation';
 import { LogOut } from 'lucide-react';
 import toast from 'react-hot-toast';
 import NotificationButton from '@/components/NotificationButton';
+import { useState, useEffect } from 'react';
 
 export default function SettingsPage() {
     const router = useRouter();
+    const [fcmDebugEnabled, setFcmDebugEnabled] = useState(false);
+
+    useEffect(() => {
+        // Load FCM debug setting from localStorage
+        const debugEnabled = localStorage.getItem('fcm_debug_enabled') === 'true';
+        setFcmDebugEnabled(debugEnabled);
+    }, []);
 
     const handleLogout = async () => {
         try {
@@ -27,6 +35,20 @@ export default function SettingsPage() {
         }
     };
 
+    const handleFcmDebugToggle = () => {
+        const newValue = !fcmDebugEnabled;
+        setFcmDebugEnabled(newValue);
+        localStorage.setItem('fcm_debug_enabled', String(newValue));
+
+        // Trigger storage event manually for same tab
+        window.dispatchEvent(new StorageEvent('storage', {
+            key: 'fcm_debug_enabled',
+            newValue: String(newValue),
+        }));
+
+        toast.success(newValue ? 'FCM 디버그 활성화' : 'FCM 디버그 비활성화');
+    };
+
     return (
         <div className="p-4 bg-white min-h-screen">
             <h1 className="text-2xl font-bold mb-6 text-gray-900">설정</h1>
@@ -35,6 +57,22 @@ export default function SettingsPage() {
                 <div className="flex items-center justify-between p-3 border-b border-gray-100">
                     <span className="font-medium text-gray-900">알림 설정</span>
                     <NotificationButton />
+                </div>
+
+                <div className="flex items-center justify-between p-3 border-b border-gray-100">
+                    <span className="font-medium text-gray-900">FCM 디버그 패널</span>
+                    <button
+                        onClick={handleFcmDebugToggle}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                            fcmDebugEnabled ? 'bg-indigo-600' : 'bg-gray-200'
+                        }`}
+                    >
+                        <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                fcmDebugEnabled ? 'translate-x-6' : 'translate-x-1'
+                            }`}
+                        />
+                    </button>
                 </div>
 
                 <button

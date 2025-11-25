@@ -19,21 +19,39 @@ export const clearDebugLogs = () => {
 
 export default function FCMDebugger() {
     const [logs, setLogs] = useState<string[]>(globalLogs);
-    const [isVisible, setIsVisible] = useState(true);
+    const [isVisible, setIsVisible] = useState(false);
+    const [isEnabled, setIsEnabled] = useState(false);
 
     useEffect(() => {
+        // Check localStorage for debug setting
+        const debugEnabled = localStorage.getItem('fcm_debug_enabled') === 'true';
+        setIsEnabled(debugEnabled);
+        setIsVisible(debugEnabled);
+
         // Subscribe to log updates
         logListeners.push(setLogs);
 
         // Initial test
         addDebugLog('🔍 FCM Debugger initialized');
 
+        // Listen for storage changes (for cross-tab updates)
+        const handleStorageChange = (e: StorageEvent) => {
+            if (e.key === 'fcm_debug_enabled') {
+                const enabled = e.newValue === 'true';
+                setIsEnabled(enabled);
+                setIsVisible(enabled);
+            }
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+
         return () => {
             logListeners = logListeners.filter(l => l !== setLogs);
+            window.removeEventListener('storage', handleStorageChange);
         };
     }, []);
 
-    if (!isVisible) return null;
+    if (!isEnabled || !isVisible) return null;
 
     return (
         <div className="fixed bottom-20 left-0 right-0 max-w-md mx-auto bg-black bg-opacity-95 text-white text-xs p-4 z-50 max-h-96 overflow-y-auto">
