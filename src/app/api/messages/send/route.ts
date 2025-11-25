@@ -35,6 +35,8 @@ export async function POST(request: Request) {
 
         // Send Push Notification
         try {
+            console.log('[Push] Starting push notification process...');
+
             // Get receiver's push token
             const { data: tokenData } = await supabaseAdmin
                 .from('push_tokens')
@@ -43,6 +45,8 @@ export async function POST(request: Request) {
                 .order('updated_at', { ascending: false })
                 .limit(1)
                 .single();
+
+            console.log('[Push] Token lookup result:', tokenData ? 'Found' : 'Not found');
 
             if (tokenData?.token) {
                 // Get sender's name
@@ -55,6 +59,12 @@ export async function POST(request: Request) {
                 const senderName = senderData?.name || '익명';
                 const messagePreview = content.length > 50 ? content.substring(0, 50) + '...' : content;
 
+                console.log('[Push] Sending notification:', {
+                    sender: senderName,
+                    receiver: receiverId,
+                    tokenPrefix: tokenData.token.substring(0, 20) + '...'
+                });
+
                 // Send FCM push notification using HTTP v1 API
                 await sendPushNotification(
                     tokenData.token,
@@ -65,12 +75,15 @@ export async function POST(request: Request) {
                         sender_id: user.id,
                     }
                 );
+
+                console.log('[Push] Notification sent successfully');
             } else {
-                console.log('No push token found for receiver');
+                console.log('[Push] No push token found for receiver:', receiverId);
             }
-        } catch (pushError) {
+        } catch (pushError: any) {
             // Don't fail the message send if push fails
-            console.error('Push notification error:', pushError);
+            console.error('[Push] Push notification error:', pushError.message);
+            console.error('[Push] Error stack:', pushError.stack);
         }
 
         return NextResponse.json({ success: true, message });
