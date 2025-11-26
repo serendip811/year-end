@@ -7,17 +7,20 @@ DELETE FROM public.push_tokens;
 DELETE FROM public.users;
 
 -- Insert users
-INSERT INTO public.users (name, email, initial_password, password_hash) VALUES ('seren.kim', 'seren.kim@kakaomobility.com', 'seren.kim', '$2b$10$JXwCL7C3ScDj4C4IJ72Ao.u6rNItczXZI3AR7pjaPXDaBj0dwMAa.');
-INSERT INTO public.users (name, email, initial_password, password_hash) VALUES ('rosa.j', 'rosa.j@kakaomobility.com', 'rosa.j', '$2b$10$.OU9L9pclZSrBr79XdqGXOFy256TjNlK5Kl9w9rYOrU4zMzkPSdY2');
-INSERT INTO public.users (name, email, initial_password, password_hash) VALUES ('siena.jang', 'siena.jang@kakaomobility.com', 'siena.jang', '$2b$10$uhLOod79FZk8K6arBVm7WOe4YxKo1oo8NsTDBCdEge7jnLLrL7P9K');
+INSERT INTO public.users (name, email, initial_password, password_hash) VALUES ('seren.kim', 'seren.kim@kakaomobility.com', 'seren.kim', '$2b$10$hnj1B8SLm4AVg5ofcDG6ruRkAzYnxaikJf.Mtpco5vp9hQ4V.h9MG');
+INSERT INTO public.users (name, email, initial_password, password_hash) VALUES ('rosa.j', 'rosa.j@kakaomobility.com', 'rosa.j', '$2b$10$rr/XjOvBhc3NSr8a4WQiwuG8iWK4NEG16emuGNa5CQ1HRCYb9XdNW');
+INSERT INTO public.users (name, email, initial_password, password_hash) VALUES ('siena.jang', 'siena.jang@kakaomobility.com', 'siena.jang', '$2b$10$Qa8YejD.2TdwYrwBmEWECOOITcelzoRGNJJi13EXJsMxRRuU.UF9K');
+INSERT INTO public.users (name, email, initial_password, password_hash) VALUES ('gram.eu', 'gram.eu@kakaomobility.com', 'gram.eu', '$2b$10$Pxhq4FGYY9guTl4YiBR4P..yaPs3XFqInBN6D3KOB38Z.STMRRRIa');
 
 -- Update manitto relationships
 UPDATE public.users SET manitto_to = (SELECT id FROM public.users WHERE name = 'rosa.j') WHERE name = 'seren.kim';
-UPDATE public.users SET manitto_to = (SELECT id FROM public.users WHERE name = 'siena.jang') WHERE name = 'rosa.j';
+UPDATE public.users SET manitto_to = (SELECT id FROM public.users WHERE name = 'gram.eu') WHERE name = 'rosa.j';
+UPDATE public.users SET manitto_to = (SELECT id FROM public.users WHERE name = 'siena.jang') WHERE name = 'gram.eu';
 UPDATE public.users SET manitto_to = (SELECT id FROM public.users WHERE name = 'seren.kim') WHERE name = 'siena.jang';
 
 UPDATE public.users SET manitto_from = (SELECT id FROM public.users WHERE name = 'seren.kim') WHERE name = 'rosa.j';
-UPDATE public.users SET manitto_from = (SELECT id FROM public.users WHERE name = 'rosa.j') WHERE name = 'siena.jang';
+UPDATE public.users SET manitto_from = (SELECT id FROM public.users WHERE name = 'rosa.j') WHERE name = 'gram.eu';
+UPDATE public.users SET manitto_from = (SELECT id FROM public.users WHERE name = 'gram.eu') WHERE name = 'siena.jang';
 UPDATE public.users SET manitto_from = (SELECT id FROM public.users WHERE name = 'siena.jang') WHERE name = 'seren.kim';
 
 -- Verify results

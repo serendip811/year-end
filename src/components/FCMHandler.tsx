@@ -54,7 +54,10 @@ export default function FCMHandler() {
         try {
             onMessageListener().then((payload: any) => {
                 console.log('Foreground message received:', payload);
-                toast(payload.notification.title + ': ' + payload.notification.body, {
+                const title = payload.notification?.title || payload.data?.title;
+                const body = payload.notification?.body || payload.data?.body;
+
+                toast(title + ': ' + body, {
                     icon: '📩',
                     duration: 5000,
                 });

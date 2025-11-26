@@ -17,9 +17,13 @@ const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
     console.log('[firebase-messaging-sw.js] Received background message ', payload);
-    const notificationTitle = payload.notification.title;
+
+    // Handle data-only messages
+    const notificationTitle = payload.notification?.title || payload.data?.title;
+    const notificationBody = payload.notification?.body || payload.data?.body;
+
     const notificationOptions = {
-        body: payload.notification.body,
+        body: notificationBody,
         icon: '/icons/icon-192.png',
         data: payload.data, // Pass data like room_id
     };

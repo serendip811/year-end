@@ -48,18 +48,7 @@ export async function sendPushNotification(
                             body,
                             ...(data || {}),
                         },
-                        webpush: {
-                            notification: {
-                                title,
-                                body,
-                                icon: '/icons/icon-192.png',
-                            },
-                            fcm_options: {
-                                link: data?.room_id
-                                    ? `${process.env.NEXT_PUBLIC_APP_URL || 'https://year-end-psi.vercel.app'}/chat/${data.room_id}`
-                                    : '/',
-                            },
-                        },
+                        // webpush notification removed to force SW handling on Android
                     },
                 }),
             }
