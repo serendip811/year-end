@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { Send, ArrowLeft, Loader2 } from 'lucide-react';
 import { supabaseClient } from '@/lib/supabase-client';
 import toast from 'react-hot-toast';
+import { useRelationships } from '@/hooks/useRelationships';
+import { formatTimeKST } from '@/lib/date-utils';
 
 interface Message {
     id: string;
@@ -19,6 +21,7 @@ export default function ChatRoomPage() {
     const params = useParams();
     const roomId = params.room_id as string;
     const router = useRouter();
+    const { data: relationships } = useRelationships();
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
     const [loading, setLoading] = useState(false);
@@ -27,6 +30,21 @@ export default function ChatRoomPage() {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const chatContainerRef = useRef<HTMLDivElement>(null);
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+    // 상대방 정보 결정
+    const getChatPartnerName = () => {
+        if (!relationships || !currentUserId) return 'Chat Room';
+        
+        const otherUserId = roomId.split('_').find(id => id !== currentUserId);
+        
+        if (otherUserId === relationships.manittoId) {
+            return '내 마니또';
+        } else if (otherUserId === relationships.target?.id) {
+            return `챙겨줄 대상 (${relationships.target.name})`;
+        }
+        
+        return 'Chat Room';
+    };
 
     // Fetch current user
     useEffect(() => {
@@ -191,10 +209,10 @@ export default function ChatRoomPage() {
         <div className="flex flex-col h-full w-full bg-gray-100 relative">
             {/* Header - Fixed */}
             <div className="sticky top-0 bg-white shadow px-4 py-3 flex items-center z-20 border-b border-gray-200">
-                <button onClick={() => router.back()} className="mr-4 text-gray-600">
+                <button onClick={() => router.back()} className="mr-4 text-gray-600 hover:text-gray-800 transition-colors">
                     <ArrowLeft />
                 </button>
-                <h1 className="text-lg font-bold text-gray-800">Chat Room</h1>
+                <h1 className="text-lg font-bold text-gray-800">{getChatPartnerName()}</h1>
             </div>
 
             {/* Messages - Scrollable */}
@@ -225,7 +243,7 @@ export default function ChatRoomPage() {
                         >
                             <p className="text-sm break-words">{msg.content}</p>
                             <span className={`text-[10px] block text-right mt-1 ${msg.sender === currentUserId ? 'text-indigo-200' : 'text-gray-400'}`}>
-                                {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                {formatTimeKST(msg.created_at)}
                             </span>
                         </div>
                     </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { formatDateKST } from '@/lib/date-utils';
 
 interface DailyData {
     date: string;
@@ -25,7 +26,7 @@ export default function RelationshipChart({ data, title, color }: RelationshipCh
 
     // Format data for display
     const formattedData = filteredData.map(item => ({
-        date: new Date(item.date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }),
+        date: formatDateKST(item.date),
         '보낸 메시지': item.sent,
         '받은 메시지': item.received,
     }));

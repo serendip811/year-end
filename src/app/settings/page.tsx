@@ -107,6 +107,20 @@ export default function SettingsPage() {
                     <LogOut size={20} />
                 </button>
             </div>
+
+            {/* 버그 리포팅 안내 */}
+            <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <p className="text-sm text-gray-600 text-center">
+                    버그 리포팅은{' '}
+                    <a 
+                        href="mailto:seren.kim" 
+                        className="text-indigo-600 hover:text-indigo-800 font-medium underline"
+                    >
+                        seren.kim
+                    </a>
+                    {' '}에게
+                </p>
+            </div>
         </div>
     );
 }

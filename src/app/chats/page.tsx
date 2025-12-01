@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { User, MessageCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useRelationships } from '@/hooks/useRelationships';
+import { toKST } from '@/lib/date-utils';
 
 export default function ChatsPage() {
     const { data, isLoading } = useRelationships();
@@ -28,7 +29,7 @@ export default function ChatsPage() {
 
                     for (const roomId of rooms) {
                         if (lastMessages[roomId]) {
-                            const lastMessageTime = new Date(lastMessages[roomId]).getTime();
+                            const lastMessageTime = toKST(lastMessages[roomId]).getTime();
                             const lastReadTime = localStorage.getItem(`last_read_${roomId}`);
 
                             if (!lastReadTime || lastMessageTime > parseInt(lastReadTime)) {
@@ -74,12 +75,12 @@ export default function ChatsPage() {
                             </div>
                             <div className="flex-1 min-w-0">
                                 <div className="flex justify-between items-baseline">
-                                    <h3 className="text-base font-medium text-gray-900 truncate">비밀친구 (My Manitto)</h3>
+                                    <h3 className="text-base font-medium text-gray-900 truncate">내 마니또</h3>
                                     {unreadStatus[getRoomId(data.user.id, data.manittoId)] && (
                                         <span className="bg-red-100 text-red-800 text-xs font-medium px-2 py-0.5 rounded-full">New</span>
                                     )}
                                 </div>
-                                <p className="text-sm text-gray-500 truncate">나를 챙겨주는 비밀친구와의 대화</p>
+                                <p className="text-sm text-gray-500 truncate">나를 챙겨주는 사람과의 대화</p>
                             </div>
                         </div>
                     </Link>
@@ -99,7 +100,7 @@ export default function ChatsPage() {
                             </div>
                             <div className="flex-1 min-w-0">
                                 <div className="flex justify-between items-baseline">
-                                    <h3 className="text-base font-medium text-gray-900 truncate">내 마니또 대상 ({data.target.name})</h3>
+                                    <h3 className="text-base font-medium text-gray-900 truncate">챙겨줄 대상 ({data.target.name})</h3>
                                     {unreadStatus[getRoomId(data.user.id, data.target.id)] && (
                                         <span className="bg-red-100 text-red-800 text-xs font-medium px-2 py-0.5 rounded-full">New</span>
                                     )}

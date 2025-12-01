@@ -1,6 +1,7 @@
 'use client';
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { formatDateKST } from '@/lib/date-utils';
 
 interface DailyCount {
     date: string;
@@ -24,9 +25,9 @@ export default function DailyMessageChart({ data }: DailyMessageChartProps) {
 
     // Format data for display
     const formattedData = filteredData.map(item => ({
-        date: new Date(item.date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }),
-        '비밀친구': item.manitto,
-        '내 마니또 대상': item.target,
+        date: formatDateKST(item.date),
+        '내 마니또': item.manitto,
+        '챙겨줄 대상': item.target,
     }));
 
     return (
@@ -45,7 +46,7 @@ export default function DailyMessageChart({ data }: DailyMessageChartProps) {
                     <Legend />
                     <Line
                         type="monotone"
-                        dataKey="비밀친구"
+                        dataKey="내 마니또"
                         stroke="#4F46E5"
                         strokeWidth={2}
                         dot={{ fill: '#4F46E5', r: 4 }}
@@ -53,7 +54,7 @@ export default function DailyMessageChart({ data }: DailyMessageChartProps) {
                     />
                     <Line
                         type="monotone"
-                        dataKey="내 마니또 대상"
+                        dataKey="챙겨줄 대상"
                         stroke="#10B981"
                         strokeWidth={2}
                         dot={{ fill: '#10B981', r: 4 }}
@@ -64,11 +65,11 @@ export default function DailyMessageChart({ data }: DailyMessageChartProps) {
             <div className="mt-4 flex justify-center space-x-6 text-sm text-gray-600">
                 <div className="flex items-center">
                     <div className="w-4 h-0.5 bg-indigo-600 mr-2"></div>
-                    <span>비밀친구와의 대화</span>
+                    <span>내 마니또와의 대화</span>
                 </div>
                 <div className="flex items-center">
                     <div className="w-4 h-0.5 bg-green-500 mr-2"></div>
-                    <span>내 마니또 대상과의 대화</span>
+                    <span>챙겨줄 대상과의 대화</span>
                 </div>
             </div>
         </div>
