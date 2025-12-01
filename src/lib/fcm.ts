@@ -48,7 +48,11 @@ export async function sendPushNotification(
                             body,
                             ...(data || {}),
                         },
-                        // webpush notification removed to force SW handling on Android
+                        webpush: {
+                            headers: {
+                                Urgency: 'high',
+                            },
+                        },
                     },
                 }),
             }

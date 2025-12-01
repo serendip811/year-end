@@ -6,8 +6,28 @@ import { verifyToken } from './lib/jwt';
 export async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
 
-    // Define public paths
-    const isPublicPath = path === '/login' || path.startsWith('/api/auth/login') || path.startsWith('/icons') || path.startsWith('/_next') || path === '/manifest.json' || path === '/sw.js' || path === '/workbox-';
+    // Define public paths that don't require authentication
+    const publicPaths = [
+        '/login',
+        '/api/auth/login',
+    ];
+
+    const publicPathPrefixes = [
+        '/icons',
+        '/_next',
+        '/workbox-',
+    ];
+
+    const publicFiles = [
+        '/manifest.json',
+        '/sw.js',
+        '/firebase-messaging-sw.js',
+    ];
+
+    const isPublicPath = 
+        publicPaths.includes(path) ||
+        publicPathPrefixes.some(prefix => path.startsWith(prefix)) ||
+        publicFiles.includes(path);
 
     const token = request.cookies.get('auth_token')?.value;
     const verifiedToken = token ? await verifyToken(token) : null;
