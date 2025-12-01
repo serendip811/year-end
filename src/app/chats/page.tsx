@@ -28,18 +28,24 @@ export default function ChatsPage() {
 
                     for (const roomId of rooms) {
                         if (lastMessages[roomId]) {
-                            // UTC 기준 timestamp로 비교 (toKST 사용하지 않음)
+                            // timestamp 기준으로 비교 (DB 타임존 무관)
                             const lastMessageTime = new Date(lastMessages[roomId]).getTime();
                             const lastReadTime = localStorage.getItem(`last_read_${roomId}`);
 
+                            const isUnread = !lastReadTime || lastMessageTime > parseInt(lastReadTime);
+                            
                             console.log('[Chats] Unread check:', {
                                 roomId,
-                                lastMessageTime: new Date(lastMessageTime).toISOString(),
-                                lastReadTime: lastReadTime ? new Date(parseInt(lastReadTime)).toISOString() : 'never',
-                                isUnread: !lastReadTime || lastMessageTime > parseInt(lastReadTime)
+                                lastMessageRaw: lastMessages[roomId],
+                                lastMessageTime,
+                                lastMessageDate: new Date(lastMessageTime).toString(),
+                                lastReadTime: lastReadTime || 'never',
+                                lastReadDate: lastReadTime ? new Date(parseInt(lastReadTime)).toString() : 'never',
+                                diff: lastReadTime ? (lastMessageTime - parseInt(lastReadTime)) / 1000 + 's' : 'N/A',
+                                isUnread
                             });
 
-                            if (!lastReadTime || lastMessageTime > parseInt(lastReadTime)) {
+                            if (isUnread) {
                                 status[roomId] = true;
                             }
                         }
