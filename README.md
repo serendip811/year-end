@@ -1,8 +1,8 @@
-# Manitto Secret Chat WebApp
+# 카모 빌링비즈 마니또 앱
 
 ## 📌 프로젝트 개요
 
-회사 송년회를 위한 익명 마니또(Manitto) 채팅 웹앱을 개발한다.
+카모 빌링비즈 연말 송년회를 위한 익명 마니또(Manitto) 채팅 웹앱입니다.
 각 사용자는 2개의 채팅 상대가 있다:
 - `to_target`: 내가 챙겨야 하는 사람 → 실명 공개
 - `from_manitto`: 나를 챙기는 사람 → 익명 (“비밀친구”)
@@ -130,15 +130,17 @@ next-pwa 사용.
 ### /public/manifest.json
 ```json
 {
-  "name": "Manitto Secret Chat",
-  "short_name": "ManittoChat",
+  "name": "카모 빌링비즈 마니또",
+  "short_name": "카모 마니또",
+  "description": "카모 빌링비즈 연말 마니또 익명 채팅 앱",
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#ffffff",
+  "theme_color": "#6366f1",
   "background_color": "#ffffff",
+  "orientation": "portrait",
   "icons": [
-    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ]
 }
 ```

@@ -28,7 +28,7 @@ export default function LoginPage() {
                 throw new Error(data.error || 'Login failed');
             }
 
-            toast.success('Login successful!');
+            toast.success('로그인 성공!');
 
             if (data.mustChangePassword) {
                 router.push('/change-password');
@@ -48,10 +48,10 @@ export default function LoginPage() {
             <div className="max-w-md w-full space-y-8">
                 <div>
                     <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                        Manitto Secret Chat
+                        카모 빌링비즈 마니또
                     </h2>
                     <p className="mt-2 text-center text-sm text-gray-600">
-                        Sign in to your account
+                        로그인하여 시작하세요
                     </p>
                 </div>
                 <form className="mt-8 space-y-6" onSubmit={handleLogin}>
@@ -64,7 +64,7 @@ export default function LoginPage() {
                                 type="text"
                                 required
                                 className="appearance-none rounded-none rounded-t-md relative block w-full px-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                                placeholder="Name"
+                                placeholder="이름"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                             />
@@ -77,7 +77,7 @@ export default function LoginPage() {
                                 type="password"
                                 required
                                 className="appearance-none rounded-none rounded-b-md relative block w-full px-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                                placeholder="Password"
+                                placeholder="비밀번호"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
@@ -90,7 +90,7 @@ export default function LoginPage() {
                             disabled={loading}
                             className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-[0.98]"
                         >
-                            {loading ? 'Signing in...' : 'Sign in'}
+                            {loading ? '로그인 중...' : '로그인'}
                         </button>
                     </div>
                 </form>

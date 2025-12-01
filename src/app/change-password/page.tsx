@@ -15,7 +15,7 @@ export default function ChangePasswordPage() {
     const handleChangePassword = async (e: React.FormEvent) => {
         e.preventDefault();
         if (newPassword !== confirmPassword) {
-            toast.error('New passwords do not match');
+            toast.error('새 비밀번호가 일치하지 않습니다');
             return;
         }
 
@@ -31,10 +31,10 @@ export default function ChangePasswordPage() {
             const data = await res.json();
 
             if (!res.ok) {
-                throw new Error(data.error || 'Failed to change password');
+                throw new Error(data.error || '비밀번호 변경 실패');
             }
 
-            toast.success('Password changed successfully!');
+            toast.success('비밀번호가 변경되었습니다!');
             router.push('/');
         } catch (error: any) {
             toast.error(error.message);
@@ -49,10 +49,10 @@ export default function ChangePasswordPage() {
             <div className="max-w-md w-full space-y-8">
                 <div>
                     <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                        Change Password
+                        비밀번호 변경
                     </h2>
                     <p className="mt-2 text-center text-sm text-gray-600">
-                        Please update your password to continue
+                        계속하려면 비밀번호를 변경하세요
                     </p>
                 </div>
                 <form className="mt-8 space-y-6" onSubmit={handleChangePassword}>
@@ -65,7 +65,7 @@ export default function ChangePasswordPage() {
                                 type="password"
                                 required
                                 className="appearance-none rounded-none rounded-t-md relative block w-full px-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                                placeholder="Current Password"
+                                placeholder="현재 비밀번호"
                                 value={currentPassword}
                                 onChange={(e) => setCurrentPassword(e.target.value)}
                             />
@@ -78,7 +78,7 @@ export default function ChangePasswordPage() {
                                 type="password"
                                 required
                                 className="appearance-none rounded-none relative block w-full px-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                                placeholder="New Password"
+                                placeholder="새 비밀번호"
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
                             />
@@ -91,7 +91,7 @@ export default function ChangePasswordPage() {
                                 type="password"
                                 required
                                 className="appearance-none rounded-none rounded-b-md relative block w-full px-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                                placeholder="Confirm New Password"
+                                placeholder="새 비밀번호 확인"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                             />
@@ -104,7 +104,7 @@ export default function ChangePasswordPage() {
                             disabled={loading}
                             className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-[0.98]"
                         >
-                            {loading ? 'Updating...' : 'Update Password'}
+                            {loading ? '변경 중...' : '비밀번호 변경'}
                         </button>
                     </div>
                 </form>

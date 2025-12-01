@@ -11,9 +11,30 @@ import LoadingBar from "@/components/LoadingBar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Manitto Secret Chat",
-  description: "Anonymous chat for year-end party",
+  title: "카모 빌링비즈 마니또",
+  description: "카모 빌링비즈 연말 마니또 익명 채팅 앱",
   manifest: "/manifest.json",
+  metadataBase: new URL('https://year-end-green.vercel.app'),
+  openGraph: {
+    title: "카모 빌링비즈 마니또",
+    description: "카모 빌링비즈 연말 마니또 익명 채팅 앱",
+    type: "website",
+    locale: "ko_KR",
+    siteName: "카모 빌링비즈 마니또",
+  },
+  twitter: {
+    card: "summary",
+    title: "카모 빌링비즈 마니또",
+    description: "카모 빌링비즈 연말 마니또 익명 채팅 앱",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "카모 빌링비즈 마니또",
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
 export const viewport: Viewport = {
@@ -29,7 +50,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ko">
       <body className={inter.className}>
         <QueryProvider>
           <LoadingBar />
