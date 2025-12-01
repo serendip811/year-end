@@ -69,8 +69,8 @@ export async function POST(request: Request) {
         response.cookies.set('auth_token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 60 * 60 * 24 * 7, // 7 days
+            sameSite: 'lax', // PWA standalone 모드에서도 작동하도록 lax 사용
+            maxAge: 60 * 60 * 24 * 30, // 30 days (더 긴 유지)
             path: '/',
         });
 

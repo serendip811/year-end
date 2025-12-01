@@ -7,7 +7,7 @@ const secretKey = new TextEncoder().encode(JWT_SECRET);
 export async function signToken(payload: any): Promise<string> {
     return await new SignJWT(payload)
         .setProtectedHeader({ alg: 'HS256' })
-        .setExpirationTime('7d')
+        .setExpirationTime('30d') // 30일로 연장
         .sign(secretKey);
 }
 
@@ -24,8 +24,8 @@ export function setAuthCookie(token: string) {
     cookies().set('auth_token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 60 * 60 * 24 * 7, // 7 days
+        sameSite: 'lax', // PWA standalone 모드 지원
+        maxAge: 60 * 60 * 24 * 30, // 30 days
         path: '/',
     });
 }
