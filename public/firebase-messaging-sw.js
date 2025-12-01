@@ -1,5 +1,5 @@
 // Service Worker Version - increment to force update
-const SW_VERSION = 'v1.0.2';
+const SW_VERSION = 'v1.0.3';
 console.log(`[SW] Version ${SW_VERSION} loading...`);
 
 // Give the service worker access to Firebase Messaging.
@@ -35,8 +35,8 @@ messaging.onBackgroundMessage((payload) => {
 
     const notificationOptions = {
         body: notificationBody,
-        icon: '/icons/icon-192.png',
-        badge: '/icons/icon-192.png',
+        icon: '/icons/and.png',
+        badge: '/icons/and.png',
         tag: 'message-notification',
         requireInteraction: false,
         data: payload.data || {},
