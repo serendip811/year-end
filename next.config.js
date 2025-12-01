@@ -3,9 +3,10 @@ const withPWA = require("next-pwa")({
     register: true,
     skipWaiting: true,
     disable: process.env.NODE_ENV === "development",
-    // Firebase messaging service worker를 제외
-    swSrc: false, // 커스텀 SW 사용하지 않음
     scope: '/',
+    buildExcludes: [/middleware-manifest\.json$/],
+    // Firebase messaging service worker와 충돌하지 않도록 별도 처리
+    publicExcludes: ['!firebase-messaging-sw.js'],
 });
 
 /** @type {import('next').NextConfig} */
