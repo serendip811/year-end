@@ -2,11 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
-import FCMHandler from "@/components/FCMHandler";
-import FCMDebugger from "@/components/FCMDebugger";
-import BottomNav from "@/components/BottomNav";
 import QueryProvider from "@/components/QueryProvider";
 import LoadingBar from "@/components/LoadingBar";
+import LayoutWrapper from "@/components/LayoutWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -71,16 +69,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <QueryProvider>
           <LoadingBar />
-          <FCMHandler />
-          <FCMDebugger />
-          <div className="h-screen bg-gray-100 flex justify-center overflow-hidden">
-            <div className="w-full max-w-md bg-white h-full shadow-2xl relative flex flex-col">
-              <div className="flex-1 pb-16 overflow-hidden">
-                {children}
-              </div>
-              <BottomNav />
-            </div>
-          </div>
+          <LayoutWrapper>{children}</LayoutWrapper>
           <Toaster />
         </QueryProvider>
       </body>
