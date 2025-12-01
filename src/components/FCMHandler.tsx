@@ -54,12 +54,11 @@ export default function FCMHandler() {
         try {
             onMessageListener().then((payload: any) => {
                 console.log('Foreground message received:', payload);
-                const title = payload.notification?.title || payload.data?.title;
-                const body = payload.notification?.body || payload.data?.body;
-
-                toast(title + ': ' + body, {
+                
+                // 익명성 보호: 발신자 이름이나 내용 노출하지 않음
+                toast('새로운 메시지가 도착했습니다', {
                     icon: '📩',
-                    duration: 5000,
+                    duration: 3000,
                 });
             }).catch((err) => {
                 console.log('Message listener error:', err);

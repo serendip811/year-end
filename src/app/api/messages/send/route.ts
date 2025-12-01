@@ -51,29 +51,18 @@ export async function POST(request: Request) {
             console.log('[Push] Token lookup result:', tokenData ? 'Found' : 'Not found');
 
             if (tokenData?.token) {
-                // Get sender's name
-                const { data: senderData } = await supabaseAdmin
-                    .from('users')
-                    .select('name')
-                    .eq('id', user.id)
-                    .single();
-
-                const senderName = senderData?.name || '익명';
-                const messagePreview = content.length > 50 ? content.substring(0, 50) + '...' : content;
-
                 console.log('[Push] Sending notification:', {
-                    sender: senderName,
                     receiver: receiverId,
                     tokenPrefix: tokenData.token.substring(0, 20) + '...',
-                    title: `${senderName}님의 메시지`,
-                    body: messagePreview,
+                    title: '새 메시지',
+                    body: '새로운 메시지가 도착했습니다',
                 });
 
                 // Send FCM push notification using HTTP v1 API
                 const result = await sendPushNotification(
                     tokenData.token,
-                    `${senderName}님의 메시지`,
-                    messagePreview,
+                    '새 메시지',
+                    '새로운 메시지가 도착했습니다',
                     {
                         room_id: roomId,
                         sender_id: user.id,
