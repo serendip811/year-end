@@ -39,7 +39,7 @@ export default function ChatRoomPage() {
         
         if (otherUserId === relationships.manittoId) {
             return '내 마니또';
-        } else if (otherUserId === relationships.target?.id) {
+        } else if (relationships.target && otherUserId === relationships.target.id) {
             return `챙겨줄 대상 (${relationships.target.name})`;
         }
         
