@@ -42,15 +42,33 @@ export async function sendPushNotification(
                 body: JSON.stringify({
                     message: {
                         token: fcmToken,
-                        // Use data-only message to handle both foreground and background
+                        // notification 페이로드: Android/iOS 자동 표시
+                        notification: {
+                            title,
+                            body,
+                        },
+                        // data 페이로드: 커스텀 데이터 전달
                         data: {
                             title,
                             body,
                             ...(data || {}),
                         },
+                        // Android 설정
+                        android: {
+                            priority: 'high',
+                            notification: {
+                                sound: 'default',
+                                clickAction: 'FLUTTER_NOTIFICATION_CLICK',
+                            },
+                        },
+                        // Web 설정
                         webpush: {
                             headers: {
                                 Urgency: 'high',
+                            },
+                            notification: {
+                                icon: '/icons/icon-192.png',
+                                badge: '/icons/icon-192.png',
                             },
                         },
                     },

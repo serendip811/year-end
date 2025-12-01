@@ -94,6 +94,19 @@ export default function LoginPage() {
                         </button>
                     </div>
                 </form>
+                
+                {/* 비밀번호 변경 문의 안내 */}
+                <div className="text-center mt-4">
+                    <p className="text-xs text-gray-500">
+                        비밀번호 변경 문의 →{' '}
+                        <a 
+                            href="mailto:seren.kim" 
+                            className="text-indigo-600 hover:text-indigo-800 font-medium"
+                        >
+                            seren.kim
+                        </a>
+                    </p>
+                </div>
             </div>
         </div>
     );

@@ -37,6 +37,21 @@ export const requestNotificationPermission = async () => {
             return null;
         }
 
+        // Service Worker 등록
+        log('🔧 [Firebase] Registering service worker...');
+        if ('serviceWorker' in navigator) {
+            try {
+                const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                log(`✅ [Firebase] SW registered: ${registration.scope}`);
+                
+                // Service Worker가 활성화될 때까지 대기
+                await navigator.serviceWorker.ready;
+                log('✅ [Firebase] SW ready');
+            } catch (swError: any) {
+                log(`⚠️ [Firebase] SW registration error: ${swError.message}`);
+            }
+        }
+
         log('📱 [Firebase] Getting messaging...');
         const messaging = getMessaging(app);
         log('✅ [Firebase] Messaging OK');
