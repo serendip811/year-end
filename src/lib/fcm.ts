@@ -42,12 +42,7 @@ export async function sendPushNotification(
                 body: JSON.stringify({
                     message: {
                         token: fcmToken,
-                        // notification 페이로드: Android/iOS 자동 표시
-                        notification: {
-                            title,
-                            body,
-                        },
-                        // data 페이로드: 커스텀 데이터 전달
+                        // data 페이로드만 사용: Service Worker와 앱에서 직접 처리
                         data: {
                             title,
                             body,
@@ -56,19 +51,11 @@ export async function sendPushNotification(
                         // Android 설정
                         android: {
                             priority: 'high',
-                            notification: {
-                                sound: 'default',
-                                clickAction: 'FLUTTER_NOTIFICATION_CLICK',
-                            },
                         },
                         // Web 설정
                         webpush: {
                             headers: {
                                 Urgency: 'high',
-                            },
-                            notification: {
-                                icon: '/icons/icon-192.png',
-                                badge: '/icons/icon-192.png',
                             },
                         },
                     },

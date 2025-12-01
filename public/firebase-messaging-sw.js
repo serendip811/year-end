@@ -1,5 +1,5 @@
 // Service Worker Version - increment to force update
-const SW_VERSION = 'v1.0.1';
+const SW_VERSION = 'v1.0.2';
 console.log(`[SW] Version ${SW_VERSION} loading...`);
 
 // Give the service worker access to Firebase Messaging.
@@ -25,12 +25,13 @@ const messaging = firebase.messaging();
 
 console.log('[SW] Messaging instance created');
 
-// 백그라운드 메시지 핸들러
+// 백그라운드 메시지 핸들러 (data 페이로드 처리)
 messaging.onBackgroundMessage((payload) => {
     console.log('[SW] Received background message:', payload);
 
-    const notificationTitle = payload.notification?.title || payload.data?.title || '새 메시지';
-    const notificationBody = payload.notification?.body || payload.data?.body || '';
+    // data 페이로드에서 제목과 내용 추출
+    const notificationTitle = payload.data?.title || '새 메시지';
+    const notificationBody = payload.data?.body || '';
 
     const notificationOptions = {
         body: notificationBody,
