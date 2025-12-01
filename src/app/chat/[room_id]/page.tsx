@@ -222,23 +222,23 @@ export default function ChatRoomPage() {
     };
 
     return (
-        <div className="flex flex-col h-full w-full bg-gray-100 relative">
-            {/* Header - Fixed */}
-            <div className="sticky top-0 bg-white shadow px-4 py-3 flex items-center z-20 border-b border-gray-200">
-                <button onClick={() => router.back()} className="mr-4 text-gray-600 hover:text-gray-800 transition-colors">
+        <div className="fixed inset-0 flex flex-col bg-gray-100">
+            {/* Header - Fixed at top */}
+            <div className="fixed top-0 left-0 right-0 bg-white shadow px-4 py-3 flex items-center z-30 border-b border-gray-200">
+                <button onClick={() => router.back()} className="mr-4 text-gray-600 hover:text-gray-800 transition-colors active:scale-95">
                     <ArrowLeft />
                 </button>
                 <h1 className="text-lg font-bold text-gray-800">{getChatPartnerName()}</h1>
             </div>
 
-            {/* Messages - Scrollable */}
+            {/* Messages - Scrollable with padding for fixed header/footer */}
             <div
                 ref={chatContainerRef}
                 onScroll={handleScroll}
                 className="flex-1 overflow-y-auto p-4 space-y-4"
                 style={{
-                    height: 'calc(100vh - 120px)', // 헤더 + 입력창 높이 제외
-                    maxHeight: 'calc(100vh - 120px)'
+                    paddingTop: '60px', // 헤더 높이
+                    paddingBottom: '70px', // 입력창 높이
                 }}
             >
                 {fetchingOlder && (
@@ -268,19 +268,19 @@ export default function ChatRoomPage() {
             </div>
 
             {/* Input - Fixed at bottom */}
-            <div className="sticky bottom-0 bg-white border-t border-gray-200 px-3 py-2 z-20">
-                <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
+            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-3 py-3 z-30" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
+                <form onSubmit={handleSendMessage} className="flex items-center space-x-2 max-w-md mx-auto">
                     <input
                         type="text"
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         placeholder="메시지를 입력하세요..."
-                        className="flex-1 bg-gray-100 rounded-full px-4 py-1.5 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="flex-1 bg-gray-100 rounded-full px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                     <button
                         type="submit"
                         disabled={loading || !newMessage.trim()}
-                        className="bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-95 flex-shrink-0"
+                        className="bg-indigo-600 text-white p-2.5 rounded-full hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-95 flex-shrink-0"
                     >
                         {loading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
                     </button>
