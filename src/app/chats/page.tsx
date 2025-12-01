@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { User, MessageCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useRelationships } from '@/hooks/useRelationships';
-import { toKST } from '@/lib/date-utils';
 
 export default function ChatsPage() {
     const { data, isLoading } = useRelationships();
@@ -29,8 +28,16 @@ export default function ChatsPage() {
 
                     for (const roomId of rooms) {
                         if (lastMessages[roomId]) {
-                            const lastMessageTime = toKST(lastMessages[roomId]).getTime();
+                            // UTC 기준 timestamp로 비교 (toKST 사용하지 않음)
+                            const lastMessageTime = new Date(lastMessages[roomId]).getTime();
                             const lastReadTime = localStorage.getItem(`last_read_${roomId}`);
+
+                            console.log('[Chats] Unread check:', {
+                                roomId,
+                                lastMessageTime: new Date(lastMessageTime).toISOString(),
+                                lastReadTime: lastReadTime ? new Date(parseInt(lastReadTime)).toISOString() : 'never',
+                                isUnread: !lastReadTime || lastMessageTime > parseInt(lastReadTime)
+                            });
 
                             if (!lastReadTime || lastMessageTime > parseInt(lastReadTime)) {
                                 status[roomId] = true;
