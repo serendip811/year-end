@@ -64,11 +64,13 @@ export async function POST(request: Request) {
                 console.log('[Push] Sending notification:', {
                     sender: senderName,
                     receiver: receiverId,
-                    tokenPrefix: tokenData.token.substring(0, 20) + '...'
+                    tokenPrefix: tokenData.token.substring(0, 20) + '...',
+                    title: `${senderName}님의 메시지`,
+                    body: messagePreview,
                 });
 
                 // Send FCM push notification using HTTP v1 API
-                await sendPushNotification(
+                const result = await sendPushNotification(
                     tokenData.token,
                     `${senderName}님의 메시지`,
                     messagePreview,
@@ -78,7 +80,7 @@ export async function POST(request: Request) {
                     }
                 );
 
-                console.log('[Push] Notification sent successfully');
+                console.log('[Push] Notification sent successfully:', result);
             } else {
                 console.log('[Push] No push token found for receiver:', receiverId);
             }

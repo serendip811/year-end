@@ -78,15 +78,25 @@ export async function sendPushNotification(
 
         if (!response.ok) {
             const error = await response.text();
-            console.error('FCM HTTP v1 API error:', error);
-            throw new Error(`FCM error: ${error}`);
+            console.error('[FCM] HTTP v1 API error:', {
+                status: response.status,
+                statusText: response.statusText,
+                error: error
+            });
+            throw new Error(`FCM error: ${response.status} - ${error}`);
         }
 
         const result = await response.json();
-        console.log('Push notification sent successfully:', result);
+        console.log('[FCM] Push notification sent successfully:', {
+            messageId: result.name,
+            token: fcmToken.substring(0, 20) + '...',
+        });
         return result;
-    } catch (error) {
-        console.error('Failed to send push notification:', error);
+    } catch (error: any) {
+        console.error('[FCM] Failed to send push notification:', {
+            error: error.message,
+            stack: error.stack,
+        });
         throw error;
     }
 }

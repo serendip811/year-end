@@ -37,43 +37,23 @@ export const requestNotificationPermission = async () => {
             return null;
         }
 
-        // Service Worker 등록
+        // Service Worker 등록 (Firebase Messaging용)
         log('🔧 [Firebase] Registering service worker...');
         if ('serviceWorker' in navigator) {
             try {
-                // 기존 Service Worker 확인 및 업데이트
-                const existingRegistration = await navigator.serviceWorker.getRegistration('/firebase-messaging-sw.js');
-                if (existingRegistration) {
-                    log('🔄 [Firebase] Updating existing SW...');
-                    await existingRegistration.update();
-                }
-
-                // Service Worker 등록 (버전 쿼리 파라미터로 캐시 무효화)
-                const swUrl = `/firebase-messaging-sw.js?v=${Date.now()}`;
-                const registration = await navigator.serviceWorker.register(swUrl, {
+                // Firebase messaging service worker 등록
+                const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
                     scope: '/',
                     updateViaCache: 'none'
                 });
-                log(`✅ [Firebase] SW registered: ${registration.scope}`);
+                log(`✅ [Firebase] SW registered`);
                 
-                // 업데이트 체크
-                registration.addEventListener('updatefound', () => {
-                    log('🔄 [Firebase] SW update found');
-                    const newWorker = registration.installing;
-                    if (newWorker) {
-                        newWorker.addEventListener('statechange', () => {
-                            if (newWorker.state === 'activated') {
-                                log('✅ [Firebase] SW updated and activated');
-                            }
-                        });
-                    }
-                });
-
                 // Service Worker가 활성화될 때까지 대기
                 await navigator.serviceWorker.ready;
                 log('✅ [Firebase] SW ready');
             } catch (swError: any) {
                 log(`⚠️ [Firebase] SW registration error: ${swError.message}`);
+                // Service Worker 등록 실패해도 계속 진행
             }
         }
 

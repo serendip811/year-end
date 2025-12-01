@@ -119,7 +119,11 @@ export default function ChatRoomPage() {
         localStorage.setItem(`last_read_${roomId}`, Date.now().toString());
 
         const channel = supabaseClient
-            .channel(`room:${roomId}`)
+            .channel(`room:${roomId}`, {
+                config: {
+                    broadcast: { self: false }, // 자신이 보낸 메시지는 브로드캐스트 안 받음
+                },
+            })
             .on(
                 'postgres_changes',
                 {
@@ -129,7 +133,18 @@ export default function ChatRoomPage() {
                     filter: `room_id=eq.${roomId}`,
                 },
                 (payload) => {
-                    setMessages((prev) => [...prev, payload.new as Message]);
+                    const newMessage = payload.new as Message;
+                    
+                    // 중복 방지: 이미 있는 메시지면 추가하지 않음
+                    setMessages((prev) => {
+                        const exists = prev.some(msg => msg.id === newMessage.id);
+                        if (exists) {
+                            console.log('[Chat] Duplicate message ignored:', newMessage.id);
+                            return prev;
+                        }
+                        return [...prev, newMessage];
+                    });
+                    
                     // Scroll to bottom on new message
                     setTimeout(() => {
                         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -142,6 +157,7 @@ export default function ChatRoomPage() {
             .subscribe();
 
         return () => {
+            console.log('[Chat] Cleaning up channel:', roomId);
             supabaseClient.removeChannel(channel);
         };
     }, [roomId, fetchMessages, router]);
