@@ -11,11 +11,45 @@ export default function SettingsPage() {
     const router = useRouter();
     const queryClient = useQueryClient();
     const [fcmDebugEnabled, setFcmDebugEnabled] = useState(false);
+    const [swStatus, setSwStatus] = useState<string>('확인 중...');
+    const [swVersion, setSwVersion] = useState<string>('알 수 없음');
 
     useEffect(() => {
         // Load FCM debug setting from localStorage
         const debugEnabled = localStorage.getItem('fcm_debug_enabled') === 'true';
         setFcmDebugEnabled(debugEnabled);
+
+        // Check Service Worker status
+        const checkSW = async () => {
+            if ('serviceWorker' in navigator) {
+                const registration = await navigator.serviceWorker.getRegistration();
+                if (registration) {
+                    const sw = registration.active || registration.installing || registration.waiting;
+                    if (sw) {
+                        setSwStatus(`✅ 활성화됨 (${sw.state})`);
+                        // Try to get version from SW
+                        try {
+                            const response = await fetch('/firebase-messaging-sw.js');
+                            const text = await response.text();
+                            const versionMatch = text.match(/SW_VERSION = ['"](.+?)['"]/);
+                            if (versionMatch) {
+                                setSwVersion(versionMatch[1]);
+                            }
+                        } catch (e) {
+                            console.error('Failed to get SW version:', e);
+                        }
+                    } else {
+                        setSwStatus('⚠️ 등록되었으나 비활성');
+                    }
+                } else {
+                    setSwStatus('❌ 등록 안됨');
+                }
+            } else {
+                setSwStatus('❌ 지원 안됨');
+            }
+        };
+
+        checkSW();
     }, []);
 
     const handleLogout = async () => {
@@ -73,14 +107,37 @@ export default function SettingsPage() {
         toast.success(newValue ? 'FCM 디버그 활성화' : 'FCM 디버그 비활성화');
     };
 
+    const handleForceUpdateSW = async () => {
+        try {
+            if ('serviceWorker' in navigator) {
+                const registration = await navigator.serviceWorker.getRegistration();
+                if (registration) {
+                    await registration.unregister();
+                    toast.success('Service Worker 제거 완료. 페이지를 새로고침하세요.');
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    toast.error('등록된 Service Worker가 없습니다.');
+                }
+            }
+        } catch (error) {
+            console.error('SW unregister error:', error);
+            toast.error('Service Worker 제거 실패');
+        }
+    };
+
     return (
         <div className="p-4 bg-white min-h-screen">
             <h1 className="text-2xl font-bold mb-6 text-gray-900">설정</h1>
 
             <div className="bg-white rounded-lg shadow p-4 space-y-4">
-                <div className="flex items-center justify-between p-3 border-b border-gray-100">
-                    <span className="font-medium text-gray-900">알림 설정</span>
-                    <NotificationButton />
+                <div className="p-3 border-b border-gray-100">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <span className="font-medium text-gray-900">푸시 알림</span>
+                            <p className="text-xs text-gray-500 mt-0.5">새 메시지 알림 받기</p>
+                        </div>
+                        <NotificationButton />
+                    </div>
                 </div>
 
                 <div className="flex items-center justify-between p-3 border-b border-gray-100">
@@ -97,6 +154,25 @@ export default function SettingsPage() {
                             }`}
                         />
                     </button>
+                </div>
+
+                <div className="p-3 border-b border-gray-100">
+                    <div className="space-y-2">
+                        <div className="flex justify-between items-center text-sm">
+                            <span className="text-gray-600">Service Worker</span>
+                            <span className="font-medium text-gray-900">{swStatus}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                            <span className="text-gray-600">SW 버전</span>
+                            <span className="font-medium text-gray-900">{swVersion}</span>
+                        </div>
+                        <button
+                            onClick={handleForceUpdateSW}
+                            className="w-full mt-2 px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                        >
+                            Service Worker 재설정
+                        </button>
+                    </div>
                 </div>
 
                 <button

@@ -41,9 +41,34 @@ export const requestNotificationPermission = async () => {
         log('🔧 [Firebase] Registering service worker...');
         if ('serviceWorker' in navigator) {
             try {
-                const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                // 기존 Service Worker 확인 및 업데이트
+                const existingRegistration = await navigator.serviceWorker.getRegistration('/firebase-messaging-sw.js');
+                if (existingRegistration) {
+                    log('🔄 [Firebase] Updating existing SW...');
+                    await existingRegistration.update();
+                }
+
+                // Service Worker 등록 (버전 쿼리 파라미터로 캐시 무효화)
+                const swUrl = `/firebase-messaging-sw.js?v=${Date.now()}`;
+                const registration = await navigator.serviceWorker.register(swUrl, {
+                    scope: '/',
+                    updateViaCache: 'none'
+                });
                 log(`✅ [Firebase] SW registered: ${registration.scope}`);
                 
+                // 업데이트 체크
+                registration.addEventListener('updatefound', () => {
+                    log('🔄 [Firebase] SW update found');
+                    const newWorker = registration.installing;
+                    if (newWorker) {
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'activated') {
+                                log('✅ [Firebase] SW updated and activated');
+                            }
+                        });
+                    }
+                });
+
                 // Service Worker가 활성화될 때까지 대기
                 await navigator.serviceWorker.ready;
                 log('✅ [Firebase] SW ready');
