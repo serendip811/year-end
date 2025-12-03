@@ -29,11 +29,12 @@ export default function AdminPage() {
     const [error, setError] = useState('');
     const [stats, setStats] = useState<StatsResponse | null>(null);
     const [startDate, setStartDate] = useState(
-        new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+      new Date("2025-12-01").toISOString().split("T")[0]
     );
     const [endDate, setEndDate] = useState(
         new Date().toISOString().split('T')[0]
     );
+    const [showNames, setShowNames] = useState(false);
 
     useEffect(() => {
         const checkMobile = () => {
@@ -328,6 +329,16 @@ export default function AdminPage() {
                         </div>
                         <div className="flex gap-3">
                             <button
+                                onClick={() => setShowNames(!showNames)}
+                                className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                                    showNames
+                                        ? 'bg-gray-600 hover:bg-gray-700 text-white'
+                                        : 'bg-green-600 hover:bg-green-700 text-white'
+                                }`}
+                            >
+                                {showNames ? '이름 가리기' : '이름 보기'}
+                            </button>
+                            <button
                                 onClick={handleFetchStats}
                                 disabled={loading}
                                 className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium transition-colors disabled:opacity-50"
@@ -410,9 +421,9 @@ export default function AdminPage() {
                                             <tr key={idx} className="hover:bg-blue-50 transition-colors">
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 sticky left-0 bg-white hover:bg-blue-50 z-10 border-r border-gray-200">
                                                     <span className="inline-flex items-center">
-                                                        {rel.userAName}
+                                                        {showNames ? rel.userAName : '***'}
                                                         <span className="mx-2 text-blue-600">↔</span>
-                                                        {rel.userBName}
+                                                        {showNames ? rel.userBName : '***'}
                                                     </span>
                                                 </td>
                                                 <td className="px-3 py-4 whitespace-nowrap text-sm text-center text-blue-700 font-bold bg-blue-50">
