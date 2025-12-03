@@ -391,6 +391,9 @@ export default function AdminPage() {
                                                 })}
                                             </th>
                                         ))}
+                                        <th className="px-6 py-4 text-center text-xs font-bold text-white uppercase tracking-wider bg-purple-600" rowSpan={2}>
+                                            합계
+                                        </th>
                                     </tr>
                                     <tr>
                                         <th className="px-3 py-2 text-center text-xs font-bold text-white uppercase tracking-wider bg-blue-700">
@@ -416,6 +419,8 @@ export default function AdminPage() {
                                         const statsMap = new Map(
                                             rel.dailyStats.map((s) => [s.date, { aToB: s.aToBCount, bToA: s.bToACount }])
                                         );
+
+                                        const rowTotal = rel.aToBTotal + rel.bToATotal;
 
                                         return (
                                             <tr key={idx} className="hover:bg-blue-50 transition-colors">
@@ -459,10 +464,49 @@ export default function AdminPage() {
                                                         </>
                                                     );
                                                 })}
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-purple-900 font-extrabold bg-purple-100 border-l-2 border-purple-300">
+                                                    {rowTotal}
+                                                </td>
                                             </tr>
                                         );
                                     })}
                                 </tbody>
+                                <tfoot className="bg-gradient-to-r from-yellow-50 to-orange-50 border-t-2 border-yellow-300">
+                                    <tr>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-extrabold text-gray-900 sticky left-0 bg-gradient-to-r from-yellow-50 to-orange-50 z-10 border-r border-gray-200">
+                                            합계
+                                        </td>
+                                        <td className="px-3 py-4 whitespace-nowrap text-sm text-center text-blue-900 font-extrabold">
+                                            {stats.relationships.reduce((sum, rel) => sum + rel.aToBTotal, 0)}
+                                        </td>
+                                        <td className="px-3 py-4 whitespace-nowrap text-sm text-center text-indigo-900 font-extrabold">
+                                            {stats.relationships.reduce((sum, rel) => sum + rel.bToATotal, 0)}
+                                        </td>
+                                        {dates.map((date) => {
+                                            const totalAToB = stats.relationships.reduce((sum, rel) => {
+                                                const stat = rel.dailyStats.find(s => s.date === date);
+                                                return sum + (stat?.aToBCount || 0);
+                                            }, 0);
+                                            const totalBToA = stats.relationships.reduce((sum, rel) => {
+                                                const stat = rel.dailyStats.find(s => s.date === date);
+                                                return sum + (stat?.bToACount || 0);
+                                            }, 0);
+                                            return (
+                                                <>
+                                                    <td key={`${date}-to-sum`} className="px-2 py-4 whitespace-nowrap text-sm text-center text-blue-900 font-extrabold">
+                                                        {totalAToB}
+                                                    </td>
+                                                    <td key={`${date}-from-sum`} className="px-2 py-4 whitespace-nowrap text-sm text-center text-indigo-900 font-extrabold">
+                                                        {totalBToA}
+                                                    </td>
+                                                </>
+                                            );
+                                        })}
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-orange-900 font-extrabold border-l-2 border-orange-300">
+                                            {stats.relationships.reduce((sum, rel) => sum + rel.aToBTotal + rel.bToATotal, 0)}
+                                        </td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
