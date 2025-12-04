@@ -29,6 +29,7 @@ export default function ChatRoomPage() {
     const [hasMore, setHasMore] = useState(true);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const chatContainerRef = useRef<HTMLDivElement>(null);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
     // 상대방 정보 결정
@@ -189,8 +190,8 @@ export default function ChatRoomPage() {
         }
     };
 
-    const handleSendMessage = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSendMessage = async (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
         if (!newMessage.trim() || !currentUserId) return;
 
         setLoading(true);
@@ -211,6 +212,10 @@ export default function ChatRoomPage() {
             if (!res.ok) throw new Error('Failed to send');
 
             setNewMessage('');
+            // Reset textarea height
+            if (textareaRef.current) {
+                textareaRef.current.style.height = 'auto';
+            }
             // Scroll to bottom
             messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
         } catch (error) {
@@ -219,6 +224,25 @@ export default function ChatRoomPage() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSendMessage();
+        }
+    };
+
+    const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setNewMessage(e.target.value);
+
+        // Auto-resize textarea
+        const textarea = e.target;
+        textarea.style.height = 'auto';
+        const lineHeight = 20; // approximate line height
+        const maxHeight = lineHeight * 3; // 3 lines max
+        const newHeight = Math.min(textarea.scrollHeight, maxHeight);
+        textarea.style.height = `${newHeight}px`;
     };
 
     return (
@@ -281,13 +305,16 @@ export default function ChatRoomPage() {
 
             {/* Input - Fixed at bottom */}
             <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-3 py-3 z-30" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
-                <form onSubmit={handleSendMessage} className="flex items-center space-x-2 max-w-md mx-auto">
-                    <input
-                        type="text"
+                <form onSubmit={handleSendMessage} className="flex items-end space-x-2 max-w-md mx-auto">
+                    <textarea
+                        ref={textareaRef}
                         value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
+                        onChange={handleTextareaChange}
+                        onKeyDown={handleKeyDown}
                         placeholder="메시지를 입력하세요..."
-                        className="flex-1 bg-gray-100 rounded-full px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        rows={1}
+                        className="flex-1 bg-gray-100 rounded-2xl px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none overflow-y-auto"
+                        style={{ maxHeight: '60px', minHeight: '40px' }}
                     />
                     <button
                         type="submit"
