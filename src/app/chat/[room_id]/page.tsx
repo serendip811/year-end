@@ -6,7 +6,7 @@ import { Send, ArrowLeft, Loader2 } from 'lucide-react';
 import { supabaseClient } from '@/lib/supabase-client';
 import toast from 'react-hot-toast';
 import { useRelationships } from '@/hooks/useRelationships';
-import { formatTimeKST } from '@/lib/date-utils';
+import { formatTimeKST, formatDateSeparator, isSameDay } from '@/lib/date-utils';
 
 interface Message {
     id: string;
@@ -246,24 +246,36 @@ export default function ChatRoomPage() {
                         <Loader2 className="animate-spin text-indigo-600" size={20} />
                     </div>
                 )}
-                {messages.map((msg) => (
-                    <div
-                        key={msg.id}
-                        className={`flex ${msg.sender === currentUserId ? 'justify-end' : 'justify-start'}`}
-                    >
-                        <div
-                            className={`max-w-[75%] px-4 py-2 rounded-2xl ${msg.sender === currentUserId
-                                ? 'bg-indigo-600 text-white rounded-br-none'
-                                : 'bg-white text-gray-800 rounded-bl-none shadow-sm border border-gray-100'
-                                }`}
-                        >
-                            <p className="text-sm break-words">{msg.content}</p>
-                            <span className={`text-[10px] block text-right mt-1 ${msg.sender === currentUserId ? 'text-indigo-200' : 'text-gray-400'}`}>
-                                {formatTimeKST(msg.created_at)}
-                            </span>
+                {messages.map((msg, index) => {
+                    const showDateSeparator = index === 0 || !isSameDay(messages[index - 1].created_at, msg.created_at);
+
+                    return (
+                        <div key={msg.id}>
+                            {showDateSeparator && (
+                                <div className="flex items-center justify-center my-4">
+                                    <div className="bg-gray-200 text-gray-600 text-xs px-3 py-1 rounded-full">
+                                        {formatDateSeparator(msg.created_at)}
+                                    </div>
+                                </div>
+                            )}
+                            <div
+                                className={`flex ${msg.sender === currentUserId ? 'justify-end' : 'justify-start'}`}
+                            >
+                                <div
+                                    className={`max-w-[75%] px-4 py-2 rounded-2xl ${msg.sender === currentUserId
+                                        ? 'bg-indigo-600 text-white rounded-br-none'
+                                        : 'bg-white text-gray-800 rounded-bl-none shadow-sm border border-gray-100'
+                                        }`}
+                                >
+                                    <p className="text-sm break-words">{msg.content}</p>
+                                    <span className={`text-[10px] block text-right mt-1 ${msg.sender === currentUserId ? 'text-indigo-200' : 'text-gray-400'}`}>
+                                        {formatTimeKST(msg.created_at)}
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
                 <div ref={messagesEndRef} />
             </div>
 
