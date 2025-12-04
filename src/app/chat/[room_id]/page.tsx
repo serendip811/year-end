@@ -226,13 +226,6 @@ export default function ChatRoomPage() {
         }
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            handleSendMessage();
-        }
-    };
-
     const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setNewMessage(e.target.value);
 
@@ -310,7 +303,6 @@ export default function ChatRoomPage() {
                         ref={textareaRef}
                         value={newMessage}
                         onChange={handleTextareaChange}
-                        onKeyDown={handleKeyDown}
                         placeholder="메시지를 입력하세요..."
                         rows={1}
                         className="flex-1 bg-gray-100 rounded-2xl px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none overflow-y-auto"
