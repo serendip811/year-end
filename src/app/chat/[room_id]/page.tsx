@@ -284,7 +284,7 @@ export default function ChatRoomPage() {
                                         : 'bg-white text-gray-800 rounded-bl-none shadow-sm border border-gray-100'
                                         }`}
                                 >
-                                    <p className="text-sm break-words">{msg.content}</p>
+                                    <p className="text-sm break-words whitespace-pre-wrap">{msg.content}</p>
                                     <span className={`text-[10px] block text-right mt-1 ${msg.sender === currentUserId ? 'text-indigo-200' : 'text-gray-400'}`}>
                                         {formatTimeKST(msg.created_at)}
                                     </span>
