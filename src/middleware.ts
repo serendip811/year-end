@@ -16,6 +16,8 @@ export async function middleware(request: NextRequest) {
         '/icons',
         '/_next',
         '/workbox-',
+        '/admim',
+        '/api/admim',
     ];
 
     const publicFiles = [
