@@ -1,7 +1,7 @@
 {
-    "name": "카모 빌링비즈 마니또",
-    "short_name": "카모 마니또",
-    "description": "카모 빌링비즈 연말 마니또 익명 채팅 앱",
+    "name": "티머니 모빌리티 마니또",
+    "short_name": "티머니 모빌리티 마니또",
+    "description": "티머니 모빌리티 연말 마니또 익명 채팅 앱",
     "start_url": "/",
     "display": "standalone",
     "theme_color": "#6366f1",
