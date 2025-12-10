@@ -48,7 +48,7 @@ export default function LoginPage() {
             <div className="max-w-md w-full space-y-8">
                 <div>
                     <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                        카모 빌링비즈 마니또
+                        티머니모빌리티 마니또
                     </h2>
                     <p className="mt-2 text-center text-sm text-gray-600">
                         로그인하여 시작하세요
@@ -94,19 +94,6 @@ export default function LoginPage() {
                         </button>
                     </div>
                 </form>
-                
-                {/* 비밀번호 변경 문의 안내 */}
-                <div className="text-center mt-4">
-                    <p className="text-xs text-gray-500">
-                        비밀번호 변경 문의 →{' '}
-                        <a 
-                            href="mailto:seren.kim" 
-                            className="text-indigo-600 hover:text-indigo-800 font-medium"
-                        >
-                            seren.kim
-                        </a>
-                    </p>
-                </div>
             </div>
         </div>
     );
