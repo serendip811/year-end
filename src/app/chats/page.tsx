@@ -11,7 +11,6 @@ export default function ChatsPage() {
 
     useEffect(() => {
         if (!data) return;
-        
 
         const fetchUnreadStatus = async () => {
             // Fetch latest messages for rooms
