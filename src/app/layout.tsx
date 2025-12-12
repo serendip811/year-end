@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title: "티머니모빌리티 마니또",
   description: "티머니모빌리티 연말 마니또 익명 채팅 앱",
   manifest: "/manifest.json",
-  metadataBase: new URL('https://year-end-green.vercel.app'),
+  metadataBase: new URL('https://year-end-tm.vercel.app'),
   icons: {
     icon: [
       { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
