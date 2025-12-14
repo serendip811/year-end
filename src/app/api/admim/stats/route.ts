@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { password, startDate, endDate } = body;
+        const { password, startDate, endDate, company } = body;
 
         // Check admin password
         const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
             {
                 start_date: startDate || null,
                 end_date: endDate || null,
+                company_filter: company || 'KM',
             }
         );
 
@@ -37,6 +38,7 @@ export async function POST(req: NextRequest) {
             {
                 start_date: startDate || null,
                 end_date: endDate || null,
+                company_filter: company || 'KM',
             }
         );
 

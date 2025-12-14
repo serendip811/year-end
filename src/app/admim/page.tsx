@@ -35,6 +35,7 @@ export default function AdminPage() {
         new Date().toISOString().split('T')[0]
     );
     const [showNames, setShowNames] = useState(false);
+    const [company, setCompany] = useState('KM');
 
     useEffect(() => {
         const checkMobile = () => {
@@ -72,6 +73,7 @@ export default function AdminPage() {
                     password: pwd,
                     startDate,
                     endDate,
+                    company,
                 }),
             });
 
@@ -107,6 +109,7 @@ export default function AdminPage() {
                     password,
                     startDate,
                     endDate,
+                    company,
                 }),
             });
 
@@ -142,6 +145,7 @@ export default function AdminPage() {
                     password,
                     startDate,
                     endDate,
+                    company,
                 }),
             });
 
@@ -306,6 +310,17 @@ export default function AdminPage() {
                                 🎯 마니또 메시지 통계
                             </h1>
                             <div className="flex gap-4 items-center mt-3">
+                                <div className="flex items-center gap-2">
+                                    <label className="text-sm text-gray-600 font-medium">회사:</label>
+                                    <select
+                                        value={company}
+                                        onChange={(e) => setCompany(e.target.value)}
+                                        className="px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="KM">KM</option>
+                                        <option value="TMONEY">TMONEY</option>
+                                    </select>
+                                </div>
                                 <div className="flex items-center gap-2">
                                     <label className="text-sm text-gray-600 font-medium">시작:</label>
                                     <input
