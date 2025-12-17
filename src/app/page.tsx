@@ -1,9 +1,10 @@
 'use client';
 
-import { ArrowUpRight, ArrowDownLeft } from 'lucide-react';
+import { ArrowUpRight, ArrowDownLeft, MessageSquare } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useRelationships } from '@/hooks/useRelationships';
 import RelationshipChart from '@/components/RelationshipChart';
+import ConversationAnalysisModal from '@/components/ConversationAnalysisModal';
 
 interface MessageStats {
   manitto: { sent: number; received: number };
@@ -14,6 +15,22 @@ interface DailyCount {
   date: string;
   manitto: { sent: number; received: number };
   target: { sent: number; received: number };
+}
+
+interface AnalysisData {
+  hasAnalysis: boolean;
+  data: {
+    manittoName: string;
+    targetName: string;
+    messageCount: number;
+    intimacyScore: number;
+    depthScore: number;
+    emotionalScore: number;
+    humorScore: number;
+    personalSharingScore: number;
+    totalScore: number;
+    comprehensiveAnalysis: string;
+  } | null;
 }
 
 function DashboardSkeleton() {
@@ -71,6 +88,16 @@ export default function DashboardPage() {
   const [dailyStats, setDailyStats] = useState<DailyCount[]>([]);
   const [statsLoading, setStatsLoading] = useState(true);
 
+  // 모달 상태
+  const [isManittoModalOpen, setIsManittoModalOpen] = useState(false);
+  const [isTargetModalOpen, setIsTargetModalOpen] = useState(false);
+  const [manittoAnalysis, setManittoAnalysis] = useState<AnalysisData | null>(null);
+  const [targetAnalysis, setTargetAnalysis] = useState<AnalysisData | null>(null);
+
+  // 분석 데이터 존재 여부
+  const [hasManittoAnalysis, setHasManittoAnalysis] = useState(false);
+  const [hasTargetAnalysis, setHasTargetAnalysis] = useState(false);
+
   useEffect(() => {
     // data가 없으면 API 호출하지 않음
     if (!data) return;
@@ -79,9 +106,11 @@ export default function DashboardPage() {
       setStatsLoading(true);
       try {
         // 모든 데이터를 병렬로 가져오기
-        const [statsRes, dailyStatsRes] = await Promise.all([
+        const [statsRes, dailyStatsRes, manittoAnalysisRes, targetAnalysisRes] = await Promise.all([
           fetch('/api/messages/stats'),
-          fetch('/api/messages/daily-stats')
+          fetch('/api/messages/daily-stats'),
+          fetch('/api/conversation-analysis?type=target'),
+          fetch('/api/conversation-analysis?type=manitto')
         ]);
 
         if (statsRes.ok) {
@@ -93,6 +122,18 @@ export default function DashboardPage() {
           const dailyStatsJson = await dailyStatsRes.json();
           setDailyStats(dailyStatsJson);
         }
+
+        // 마니또 분석 데이터 존재 여부 확인
+        if (manittoAnalysisRes.ok) {
+          const manittoData = await manittoAnalysisRes.json();
+          setHasManittoAnalysis(manittoData.hasAnalysis);
+        }
+
+        // 타겟 분석 데이터 존재 여부 확인
+        if (targetAnalysisRes.ok) {
+          const targetData = await targetAnalysisRes.json();
+          setHasTargetAnalysis(targetData.hasAnalysis);
+        }
       } catch (error) {
         console.error('Failed to fetch data:', error);
       } finally {
@@ -102,6 +143,75 @@ export default function DashboardPage() {
 
     fetchAllData();
   }, [data]);
+
+  // 대화 분석 공개 시간: 2025년 12월 18일 15시 (KST)
+  const ANALYSIS_RELEASE_TIME = new Date('2025-12-18T15:00:00+09:00');
+
+  // 공개 시간 체크 함수
+  const checkReleaseTime = () => {
+    const now = new Date();
+    if (now < ANALYSIS_RELEASE_TIME) {
+      const formatter = new Intl.DateTimeFormat('ko-KR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        timeZone: 'Asia/Seoul'
+      });
+      alert(`대화 분석은 송년회 행사 이후에 공개됩니다.`);
+      return false;
+    }
+    return true;
+  };
+
+  // 마니또 분석 데이터 가져오기
+  const fetchManittoAnalysis = async () => {
+    // 공개 시간 체크
+    if (!checkReleaseTime()) {
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/conversation-analysis?type=target');
+      if (res.ok) {
+        const data = await res.json();
+        setManittoAnalysis(data);
+        if (data.hasAnalysis) {
+          setIsManittoModalOpen(true);
+        } else {
+          alert('아직 분석 데이터가 없습니다.');
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch manitto analysis:', error);
+      alert('분석 데이터를 불러올 수 없습니다.');
+    }
+  };
+
+  // 타겟 분석 데이터 가져오기
+  const fetchTargetAnalysis = async () => {
+    // 공개 시간 체크
+    if (!checkReleaseTime()) {
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/conversation-analysis?type=manitto');
+      if (res.ok) {
+        const data = await res.json();
+        setTargetAnalysis(data);
+        if (data.hasAnalysis) {
+          setIsTargetModalOpen(true);
+        } else {
+          alert('아직 분석 데이터가 없습니다.');
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch target analysis:', error);
+      alert('분석 데이터를 불러올 수 없습니다.');
+    }
+  };
 
   // 로딩 중이거나 데이터가 아직 없을 때 스켈레톤 표시
   if (isLoading || !data || statsLoading) return <DashboardSkeleton />;
@@ -143,9 +253,20 @@ export default function DashboardPage() {
         {data.manittoId && (
           <>
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
-              <h2 className="text-sm font-semibold text-gray-900 mb-2">
-                내 마니또
-              </h2>
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-sm font-semibold text-gray-900">
+                  내 마니또
+                </h2>
+                {hasManittoAnalysis && (
+                  <button
+                    onClick={fetchManittoAnalysis}
+                    className="flex items-center gap-1 px-3 py-1.5 bg-indigo-600 text-white text-xs font-medium rounded-lg hover:bg-indigo-700 transition"
+                  >
+                    <MessageSquare size={14} />
+                    대화 분석
+                  </button>
+                )}
+              </div>
               <div className="grid grid-cols-3 gap-2">
                 <div className="bg-indigo-50 rounded-lg p-2">
                   <div className="flex items-center justify-between mb-1">
@@ -187,9 +308,20 @@ export default function DashboardPage() {
         {data.target && (
           <>
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
-              <h2 className="text-sm font-semibold text-gray-900 mb-2">
-                챙겨줄 대상 ({data.target.name})
-              </h2>
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-sm font-semibold text-gray-900">
+                  챙겨줄 대상 ({data.target.name})
+                </h2>
+                {hasTargetAnalysis && (
+                  <button
+                    onClick={fetchTargetAnalysis}
+                    className="flex items-center gap-1 px-3 py-1.5 bg-green-600 text-white text-xs font-medium rounded-lg hover:bg-green-700 transition"
+                  >
+                    <MessageSquare size={14} />
+                    대화 분석
+                  </button>
+                )}
+              </div>
               <div className="grid grid-cols-3 gap-2">
                 <div className="bg-green-50 rounded-lg p-2">
                   <div className="flex items-center justify-between mb-1">
@@ -227,6 +359,25 @@ export default function DashboardPage() {
           </>
         )}
       </main>
+
+      {/* 모달 */}
+      {manittoAnalysis?.hasAnalysis && manittoAnalysis.data && (
+        <ConversationAnalysisModal
+          isOpen={isManittoModalOpen}
+          onClose={() => setIsManittoModalOpen(false)}
+          data={manittoAnalysis.data}
+          type="target"
+        />
+      )}
+
+      {targetAnalysis?.hasAnalysis && targetAnalysis.data && (
+        <ConversationAnalysisModal
+          isOpen={isTargetModalOpen}
+          onClose={() => setIsTargetModalOpen(false)}
+          data={targetAnalysis.data}
+          type="manitto"
+        />
+      )}
     </div>
   );
 }
