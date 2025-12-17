@@ -145,7 +145,7 @@ export default function DashboardPage() {
   }, [data]);
 
   // 대화 분석 공개 시간: 2025년 12월 18일 15시 (KST)
-  const ANALYSIS_RELEASE_TIME = new Date('2025-12-18T15:00:00+09:00');
+  const ANALYSIS_RELEASE_TIME = new Date('2025-12-18T15:15:00+09:00');
 
   // 공개 시간 체크 함수
   const checkReleaseTime = () => {
